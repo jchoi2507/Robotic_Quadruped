@@ -1,14 +1,18 @@
-# VL53L1X ToF sensor basic distance measurement example.
+# Modified from example on OpenMV IDE for distance sensor built-in to the Nicla Vision camera
+# by Rose Kitz
+# last updated 3/31/23
+
 from machine import I2C
 from vl53l1x import VL53L1X
 import time
-import pyb
+import pyb # for built-in board capabilities (besides camera)
 
 # initialize distance (time-of-flight) sensor
 tof = VL53L1X(I2C(2))
 
 redLED = pyb.LED(1) # built-in red LED
 
+# function to blink the built-in red LED once, with 10ms delay in between
 def blink_red():
     redLED.on()
     pyb.delay(10)
