@@ -59,6 +59,7 @@ def family_name(tag):
 # function to get message for detected april tags (right now only return one message...so most last tag in tags, but for now we shouldn't ever have two tags detected at the same time
 # could adapt to send other info like rotation if want to know direction of robot relative to tag
 def get_msg_from_tags(snap):
+    # reset msg for fresh 'buffer' in case nothing is detected in next 500ms so the old value isn't returned
     message = 'do nothing' # local var for message, say 'do nothing' if no tag detected or not one of desired tag fam/ids
 
     # loop through tags (detect in line below)
@@ -92,7 +93,5 @@ while(True):
 
         # reset old tick to start new 500ms timer
         old_tick = time.ticks_ms()
-        # reset msg for fresh 'buffer' in case nothing is detected in next 500ms so the old value isn't returned
-        msg = 'do nothing'
 
     #print(clock.fps())
