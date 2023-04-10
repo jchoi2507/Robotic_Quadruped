@@ -1,8 +1,3 @@
-# Rose Kitz
-# adapted from OpenMV Example
-# Mon 4/10/23
-# added print statements for 'forward', 'back', 'left', 'right' commands for the first 0-3 april tags in the 6x6 family (recommended family)
-
 # AprilTags Example
 #
 # This example shows the power of the OpenMV Cam to detect April Tags
@@ -16,7 +11,6 @@ sensor.set_framesize(sensor.QQVGA) # we run out of memory if the resolution is m
 sensor.skip_frames(time = 2000)
 #sensor.set_auto_gain(False)  # must turn this off to prevent image washout...
 #sensor.set_auto_whitebal(False)  # must turn this off to prevent image washout...
-clock = time.clock()
 
 # Note! Unlike find_qrcodes the find_apriltags method does not need lens correction on the image to work.
 
@@ -51,23 +45,40 @@ def family_name(tag):
     if(tag.family() == image.ARTOOLKIT):
         return "ARTOOLKIT"
 
-while(True):
-    clock.tick()
-    img = sensor.snapshot()
-    for tag in img.find_apriltags(families=tag_families): # defaults to TAG36H11 without "families".
-        img.draw_rectangle(tag.rect(), color = (255, 0, 0))
-        img.draw_cross(tag.cx(), tag.cy(), color = (0, 255, 0))
-        tag_fam = family_name(tag)
-        tag_id = tag.id()
-        print_args = (tag_fam, tag_id, (180 * tag.rotation()) / math.pi)
-        print("Tag Family %s, Tag ID %d, rotation %f (degrees)" % print_args)
+# list of discrete commands to send to brain
+# just use index (0, 1, 2, 3, etc.) as the april tag id
+# (april tag ids go from 0 - whatever #, so say first command in list has id=0, second has id=1, etc., instead of making a list of ids...)
+commands = ['f', 'b', 'l', 'r', 's'] # forward, backward, left, right, stop
 
-        if tag_id == 0:
-            print('forward')
-        elif tag_id == 1:
-            print('back')
-        elif tag_id == 2:
-            print('left')
-        elif tag_id == 3:
-            print('right')
-    print(clock.fps())
+# initialize tracking vars for time and message to send to brain
+old_tick = time.ticks_ms()
+msg = 'do nothing'
+
+# loop to take snapshots w cam and interpret/send data as needed
+while(True):
+    # capture frames as fast as possible
+    img = sensor.snapshot()
+
+    # send (and calculate before) only every 500ms
+    if time.ticks_diff(time.ticks_ms(),old_tick) > 500:
+        for tag in img.find_apriltags(families=tag_families): # defaults to TAG36H11 without "families".
+            img.draw_rectangle(tag.rect(), color = (255, 0, 0))
+            img.draw_cross(tag.cx(), tag.cy(), color = (0, 255, 0))
+
+            # get useful info about tag detected
+            tag_fam = family_name(tag)
+            tag_id = tag.id()
+            rotation = (180 * tag.rotation()) / math.pi
+
+            # if detected tag is within desired family and has an id within the range of the commands established above, assign a message
+            if family_name(tag) == "TAG36H11" and tag_id >=0 and tag_id<=(len(commands)-1):
+                msg = commands[tag_id]
+
+        # send direction to move based on most recent april tag seen in the last 500ms
+        print(msg)
+        # reset old tick to start new 500ms timer
+        old_tick = time.ticks_ms()
+        # reset msg for fresh 'buffer' in case nothing is detected in next 500ms so the old value isn't returned
+        msg = 'do nothing'
+
+    #print(clock.fps())
