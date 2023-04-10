@@ -13,18 +13,19 @@ sensor.skip_frames(time = 2000)
 #sensor.set_auto_gain(False)  # must turn this off to prevent image washout...
 #sensor.set_auto_whitebal(False)  # must turn this off to prevent image washout...
 
-
+# initiate LEDs to indicate if april tag detected or not
+ledRed = pyb.LED(1) # Initiates the red led
+ledGreen = pyb.LED(2) # Initiates the green led
+ledBlue = pyb.LED(3)
 
 # list of discrete commands to send to brain
 # just use index (0, 1, 2, 3, etc.) as the april tag id
 # (april tag ids go from 0 - whatever #, so say first command in list has id=0, second has id=1, etc., instead of making a list of ids...)
 commands = ['f', 'b', 'l', 'r', 's'] # forward, backward, left, right, stop
+# combos of leds to turn on for diff commands (extra indicator, and to test externally without wifi and without delay)
+leds_for_commands = [[ledGreen],[ledBlue],[ledBlue,ledGreen],[ledBlue,ledRed],[ledRed]]
 # initialize message to send if no tag detected (no command, so tell brain to do nothing)
 msg = 'do nothing'
-
-# initiate LEDs to indicate if april tag detected or not
-ledRed = pyb.LED(1) # Initiates the red led
-ledGreen = pyb.LED(2) # Initiates the green led
 
 
 # Note! Unlike find_qrcodes the find_apriltags method does not need lens correction on the image to work.
@@ -80,9 +81,20 @@ def get_msg_from_tags(snap):
             # if detected tag is within desired family and has an id within the range of the commands established above, assign a message
             if family_name(tag) == "TAG36H11" and tag_id >=0 and tag_id<=(len(commands)-1):
                 ledRed.off()
-                ledGreen.on()
+                on_leds(leds_for_commands[tag_id]) # turn on leds to indicate this command
                 message = commands[tag_id]
     return message
+
+
+# function to turn on multiple leds from a list at the 'same' time
+def on_leds(leds):
+    for led in leds:
+        led.on()
+# function to turn off all leds
+def off_all_leds():
+    ledBlue.off()
+    ledRed.off()
+    ledGreen.off()
 
 # initialize tracking var for time
 old_tick = time.ticks_ms()
@@ -97,7 +109,7 @@ while(True):
     # send (and calculate before) only every 500ms
     if time.ticks_diff(time.ticks_ms(),old_tick) > 500:
         # reset led to red once new 500ms block starts
-        ledGreen.off()
+        off_all_leds()
         ledRed.on()
 
         msg = get_msg_from_tags(img)
