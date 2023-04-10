@@ -2,7 +2,8 @@
 # adapated from OpenMV IDE AprilTags Example (meant for OpenMV M7 cam, but works on Arduino Nicla Vision :) )
 # last updated Mon 4/10/23
 
-import sensor, image, time, math
+import sensor, image, time, math, pyb
+
 
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
@@ -20,6 +21,10 @@ sensor.skip_frames(time = 2000)
 commands = ['f', 'b', 'l', 'r', 's'] # forward, backward, left, right, stop
 # initialize message to send if no tag detected (no command, so tell brain to do nothing)
 msg = 'do nothing'
+
+# initiate LEDs to indicate if april tag detected or not
+ledRed = pyb.LED(1) # Initiates the red led
+ledGreen = pyb.LED(2) # Initiates the green led
 
 
 # Note! Unlike find_qrcodes the find_apriltags method does not need lens correction on the image to work.
@@ -74,19 +79,27 @@ def get_msg_from_tags(snap):
 
             # if detected tag is within desired family and has an id within the range of the commands established above, assign a message
             if family_name(tag) == "TAG36H11" and tag_id >=0 and tag_id<=(len(commands)-1):
+                ledRed.off()
+                ledGreen.on()
                 message = commands[tag_id]
     return message
 
 # initialize tracking var for time
 old_tick = time.ticks_ms()
 
+ledRed.on()
 # loop to take snapshots w cam and interpret/send data as needed
 while(True):
+
     # capture frames as fast as possible
     img = sensor.snapshot()
 
     # send (and calculate before) only every 500ms
     if time.ticks_diff(time.ticks_ms(),old_tick) > 500:
+        # reset led to red once new 500ms block starts
+        ledGreen.off()
+        ledRed.on()
+
         msg = get_msg_from_tags(img)
         # send direction to move based on most recent april tag seen in the last 500ms
         print(msg)
