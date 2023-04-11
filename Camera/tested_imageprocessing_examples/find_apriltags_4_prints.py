@@ -62,6 +62,16 @@ def family_name(tag):
     if(tag.family() == image.ARTOOLKIT):
         return "ARTOOLKIT"
 
+# function to turn on multiple leds from a list at the 'same' time
+def on_leds(leds):
+    for led in leds:
+        led.on()
+# function to turn off all leds
+def off_all_leds():
+    ledBlue.off()
+    ledRed.off()
+    ledGreen.off()
+
 # function to get message for detected april tags (right now only return one message...so most last tag in tags, but for now we shouldn't ever have two tags detected at the same time
 # could adapt to send other info like rotation if want to know direction of robot relative to tag
 def get_msg_from_tags(snap):
@@ -83,18 +93,11 @@ def get_msg_from_tags(snap):
                 ledRed.off()
                 on_leds(leds_for_commands[tag_id]) # turn on leds to indicate this command
                 message = commands[tag_id]
+            # to indicate if april tag detected but not within range of ids
+            elif family_name(tag) != None:
+                ledRed.on()
+                ledGreen.on()
     return message
-
-
-# function to turn on multiple leds from a list at the 'same' time
-def on_leds(leds):
-    for led in leds:
-        led.on()
-# function to turn off all leds
-def off_all_leds():
-    ledBlue.off()
-    ledRed.off()
-    ledGreen.off()
 
 # initialize tracking var for time
 old_tick = time.ticks_ms()
@@ -110,7 +113,6 @@ while(True):
     if time.ticks_diff(time.ticks_ms(),old_tick) > 500:
         # reset led to red once new 500ms block starts
         off_all_leds()
-        ledRed.on()
 
         msg = get_msg_from_tags(img)
         # send direction to move based on most recent april tag seen in the last 500ms
