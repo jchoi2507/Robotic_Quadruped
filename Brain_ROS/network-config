@@ -1,0 +1,14 @@
+# Ubuntu 20.04 network-config file for connecting to mobile hotspot
+# Saved here in case I need to revert any changes
+# IMPORTANT: Indents are NOT tabs, they are 2 spaces
+# File starts at version #, i.e, line 6
+
+version: 2
+wifis:
+  renderer: networkd
+  wlan0:
+    dhcp4: true
+    optional: true
+    access-points:
+      "iPhone (2)":
+        password: "12345678"
