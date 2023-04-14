@@ -6,3 +6,4 @@ All txt files are angles. "MP" means angles for micropython.
 "RP2040_ServoTest" is Nano RP2040 micropython file. This code controls all the legs at once.   
 **R1L2** is the code drives 1st right and 2nd left legs   
 **R2L1** is the code drives 2nd right and 1st left legs
+
