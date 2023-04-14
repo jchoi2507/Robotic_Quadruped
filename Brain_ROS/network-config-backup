@@ -1,0 +1,9 @@
+version: 2
+wifis:
+  renderer: networkd
+  wlan0:
+    dhcp4: true
+    optional: true
+    access-points:
+      "jacobiphone":
+        password: "1057fcc1bdd64a6f46ca590840b84a1dc90760150c050095e27eba07b495cea0"
