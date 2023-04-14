@@ -1,10 +1,27 @@
-from time import sleep
+'''
+PWM Library Documentation: https://docs.micropython.org/en/latest/library/machine.PWM.html
+Servo PWM Conversions:
+
+500000 ns — 0 degrees
+1000000 ns — 45 degrees
+1500000 ns — 90 degrees
+2000000 ns — 135 degrees
+2500000 ns — 180 degrees
+'''
+
+import time
 from machine import Pin,PWM
 
 servo1 = PWM(Pin(26))
 servo1.freq(50)
 servo2 = PWM(Pin(27))
 servo2.freq(50)
+servo7 = PWM(Pin(5))
+servo7.freq(50)
+servo8 = PWM(Pin(21))
+servo8.freq(50)
+
+'''
 servo3 = PWM(Pin(28))
 servo3.freq(50)
 servo4 = PWM(Pin(29))
@@ -13,10 +30,7 @@ servo5 = PWM(Pin(4))
 servo5.freq(50)
 servo6 = PWM(Pin(7))
 servo6.freq(50)
-servo7 = PWM(Pin(5))
-servo7.freq(50)
-servo8 = PWM(Pin(21))
-servo8.freq(50)
+'''
 
 angle1R = [7361,7378,7350,7293,7223,7161,7126,7123,7148,7195,7258,7328,7397,7464,7530,7597,7665,7732,7797,7862,7932,8011,8101,8205,8330,8473,8626,8776,8906,9000,9000,8930,8862,8795,8729,8665,8601,8538,8476,8415,8354,8295,8236,8178,8121,8065,8009,7954,7900,7847,7794,7743,7692,7642,7593,7545,7497,7451,7406,7361
 ]
@@ -29,19 +43,24 @@ angle2L = [2373,2318,2170,1954,1702,1455,1251,1112,1030,1000,1010,1042,1075,1100
 
 while True:
     for i in range(len(angle1R)-1):
+
         servo1.duty_u16(angle1R[i])
-        time.sleep(3)
+        
+        '''
         servo3.duty_u16(angle1R[i])
         time.sleep(3)
+        '''
         servo2.duty_u16(angle2R[i])
-        time.sleep(3)
+        
+        '''
         servo4.duty_u16(angle2R[i])
         time.sleep(3)
         servo5.duty_u16(angle1L[i])
         time.sleep(3)
         servo6.duty_u16(angle2L[i])
         time.sleep(3)
+        '''
         servo7.duty_u16(angle1L[i])
-        time.sleep(3)
+        
         servo8.duty_u16(angle2L[i])
-        time.sleep(3)
+        time.sleep(.1)
