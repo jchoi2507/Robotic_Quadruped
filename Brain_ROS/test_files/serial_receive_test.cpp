@@ -1,10 +1,11 @@
 /*
-listener.cpp
+serial_receive_test.cpp
 By: Jacob Choi
 Date: 4/15/2023
 
-- Initializes a subscriber node to listen to topic: "actuator"
-- Sends data to RP2040 over UART serial based on received messages on "actuator"
+- Used to test ROS node <-> RP2040 serial communication interface
+- Initializes a publisher node to topic: "topic_test"
+- Outputs to cout if serial data is received from RP2040
 */
 
 #include <ros/ros.h>
@@ -27,7 +28,7 @@ void callback(const std_msgs::StringConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "talker_node"); // initialize node called "listener"
+	ros::init(argc, argv, "talker_node"); // initialize node called "talker_node"
 	ros::NodeHandle node_handle; // node handle
 	ros::Publisher publisher = node_handle.advertise<std_msgs::String>("topic_test", 1);
 	ros::Rate rate(1); // 1 Hz rate
