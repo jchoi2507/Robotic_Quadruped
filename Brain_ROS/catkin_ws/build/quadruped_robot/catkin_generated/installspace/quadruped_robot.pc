@@ -1,0 +1,8 @@
+prefix=/home/jchoi/catkin_ws/install
+
+Name: quadruped_robot
+Description: Description of quadruped_robot
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
