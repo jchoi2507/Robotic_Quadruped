@@ -1,3 +1,11 @@
+/*
+publisher_node_test.cpp
+By: Jacob Choi
+Date: 4/15/2023
+
+- Used for testing basic subscribe/publish node functionality with a topic
+- Publishes "HELLO" to the topic: "topic_test", which a subscriber node can detect
+*/
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 
