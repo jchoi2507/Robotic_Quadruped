@@ -27,7 +27,7 @@ int serialDeviceID = serialOpen(port_connection, baudrate); // Returns: -1 for a
 /*
 callback()
 Callback function executes whenever subscriber queue is non-empty.
-	1) Prints out received message to ROS_INFO
+	1) Prints out received message to ROS_INFO output stream
 	2) Sends received message char over serial to RP2040
 	3) Flushes serial stream
 */
