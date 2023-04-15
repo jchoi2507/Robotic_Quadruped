@@ -4,7 +4,8 @@ By: Jacob Choi
 Date: 4/15/2023
 
 - Initializes a subscriber node to listen to topic: "topic_actuate"
-- Sends data to RP2040 over UART serial based on "actuator" subscribed messages
+- When subscriber queue is filled (size = 1), callback function stores char value
+- Sends char value to RP2040 over UART serial
 */
 
 #include <ros/ros.h>
@@ -26,7 +27,7 @@ int serialDeviceID = serialOpen(port_connection, baudrate); // Returns: -1 for a
 /*
 callback()
 Callback function executes whenever subscriber queue is non-empty.
-	1) Prints out received message to cout output stream
+	1) Prints out received message to ROS_INFO
 	2) Sends received message char over serial to RP2040
 	3) Flushes serial stream
 */
