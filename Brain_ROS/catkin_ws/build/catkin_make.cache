@@ -1,2 +1,0 @@
-quadruped_robot
--DCATKIN_DEVEL_PREFIX=/home/jchoi/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/jchoi/catkin_ws/install -G Unix Makefiles
