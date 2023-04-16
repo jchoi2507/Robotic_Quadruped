@@ -25,10 +25,7 @@ void loop() {
     char read = Serial.read();
     if (read == '\n') {} // Terminating byte read, ignore current iteration
     else {
-      digitalWrite(LED_BUILTIN, HIGH); // Flash onboard LED to signal successful transmission
       actuateRobot(read);
-      delay(10000); // for debugging only--remove later
-      digitalWrite(LED_BUILTIN, LOW);
     }
   }
 }
@@ -36,7 +33,10 @@ void loop() {
 void actuateRobot(char read) {
   switch(read) {
     case 'f':
+      digitalWrite(LED_BUILTIN, HIGH); // Flash onboard LED to signal successful transmission
       moveForward();
+      delay(10000); // for debugging only--remove later
+      digitalWrite(LED_BUILTIN, LOW);
       break;
     case 's':
       moveStop();
