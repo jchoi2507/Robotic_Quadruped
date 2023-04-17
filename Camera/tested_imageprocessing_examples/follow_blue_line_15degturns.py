@@ -1,6 +1,10 @@
 # program to detect a blue line
 # and send message which way to turn and by how many degrees in order to follow the line forward
 
+# can follow straight lines fine
+# not accurate on corners b/c sees both lines as one object so angle is off (not sure if should just detect line segments then)
+one_turn_deg = 15
+
 
 import pyb # Import module for board related functions
 import sensor # Import the module for sensor related functions
@@ -28,7 +32,6 @@ center_y = height/2
 # (l_lo, l_hi, a_lo, a_hi, b_lo, b_hi)
 # ^^^ mins & maxes for LAB L, A, B channels
 # get MANUALLY (easiest) by taking snapshot of thing then Tools > Machine Vision > Threshold Editor
-thresholdsClementine = (11, 63, 16, 54, 12, 68)
 thresholdsBlueLine = (9, 31, 8, 40, -49, -25)
 
 ledRed = pyb.LED(1) # Initiates the red led
@@ -62,11 +65,12 @@ while(True):
         # from testing, rot=0 is horiz pointing left, rot=90 is pointing up, rot=180 is horiz pointing right
         # dog's frame of reference is pointing forward is 0 deg
         deg_from_line = 90 - rot # degrees of dog (facing forward frame of reference) from line it needs to follow // (+) is line to left, (-) is line to right
-        deg_error = 3 # let robot move forward if within 3 deg rot from either side of line so not always turning
+        times_to_turn = deg_from_line // one_turn_deg # trigger one turn for every 15deg from line
+        deg_error = 15 # let robot move forward if within 3 deg rot from either side of line so not always turning
         if rot < 90 - deg_error:
-            print("turn left",deg_from_line,"degrees")
+            print("turn left",times_to_turn,"times")
         elif rot > 90 + deg_error:
-            print("turn right",abs(deg_from_line),"degrees")
+            print("turn right",abs(times_to_turn),"times")
         else:
             print("on track! keep going forward!")
 
@@ -84,6 +88,7 @@ while(True):
         # can demo can move with april tags
         # move automatically with boundaries
         # -- can delete testing serial file
+        # what happens if it gets off the line side-to-side???
 
 
     ''' change this stuff to external leds far from cam so don't affect the colors that it sees
@@ -97,5 +102,5 @@ while(True):
         ledRed.on()
     '''
 
-    pyb.delay(50) # Pauses the execution for 50ms
+    pyb.delay(500) # Pauses the execution for 50ms
     #print(clock.fps()) # Prints the framerate to the serial console
