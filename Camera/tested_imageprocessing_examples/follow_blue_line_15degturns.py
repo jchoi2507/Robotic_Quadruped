@@ -79,6 +79,13 @@ while(True):
         # Draw a cross in the middle of the blob
         img.draw_cross(x, y, color=(0,255,0))
 
+        # draw the detected corners of the blob (not super accurate to image...)
+        for i in range(4):
+            corner_x = biggest_blob.corners()[i][0]
+            corner_y = biggest_blob.corners()[i][1]
+            rad = 2 # px?
+            img.draw_circle(corner_x,corner_y,rad)
+
         # how to deal w corners??? could draw line with points of diff color at corners would make much easier but then robot isn't doing as much work...
         # draw curved line (Lol)
         # question of how much work can we do on our side to control the environment to ease the programming of the robot...but Spot is very automated
@@ -89,6 +96,9 @@ while(True):
         # move automatically with boundaries
         # -- can delete testing serial file
         # what happens if it gets off the line side-to-side???
+
+        # so don't want to send the same command until robot has completed past task...so use a buffer?
+        # b/c if filter out same detected signals then if have turned once and need to turn again it won't happen
 
 
     ''' change this stuff to external leds far from cam so don't affect the colors that it sees
