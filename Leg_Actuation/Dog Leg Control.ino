@@ -21,25 +21,37 @@ int angle2L[60] = {31,30,26,21,16,10,6,3,1,0,0,1,2,2,3,3,4,5,5,6,7,9,12,16,22,29
 }; // left leg 2nd joint
 
 void setup() {
-  servoR1_1.attach(6);  // 1st right leg's 1st joint
-  servoR1_2.attach(7);  // 1st right leg's 2nd joint
+  servoR1_1.attach(6);
+  servoR1_2.attach(7);
   servoR2_1.attach(8);
   servoR2_2.attach(9);
   servoL1_1.attach(10);
   servoL1_2.attach(11);
-  servoL2_1.attach(12);
-  servoL2_2.attach(13);
+  servoL2_1.attach(3);
+  servoL2_2.attach(2);
 }
 
 int n = 0;
 
 void loop() {
-
   // the code below checks which leg is gonna take which step by checking for odd and even loop number
   // first loop is unique because only two legs move
   // rest of the loop require four legs to move at the same time
   if (n == 0){
+    servoR1_1.write(143);
+    servoR1_2.write(149);
+    servoR2_1.write(143);
+    servoR2_2.write(149);
+    servoL1_1.write(37);
+    servoL1_2.write(31);
+    servoL2_1.write(37);
+    servoL2_2.write(31);
+    delay(2000);
     for (int i = 0; i < 30; i++){
+      servoR2_1.write(143);
+      servoR2_2.write(149);
+      servoL1_1.write(37);
+      servoL1_2.write(31);
       servoR1_1.write(angle1R[i]);
       servoR1_2.write(angle2R[i]);
       servoL2_1.write(angle1L[i]);
