@@ -10,7 +10,7 @@ Folder Tree:
 ├── Leg_Actuation
 └── catkin_ws
 ```
-`/Brain_ROS`: ROS nodes & serial communication between RPi, Nicla, and RP2040s. `/test_files` folder contains node and serial testing files <br />
+`/Brain_ROS`: ROS nodes & UART communication. `/test_files` folder contains communication tests <br />
 `/Camera`: Image processing <br />
 `/Inverse_Kinematics`: Path-planning <br />
 `/Leg_Actuation`: Servo control <br />
