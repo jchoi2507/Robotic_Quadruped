@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 	ros::Subscriber subscriber = node_handle.subscribe("topic_actuate", 1, &callback); // Subscribe to "topic_actuate"
 
 	// Check serial connection
-	if (serialDeviceID == -1) {std::cout << "Unable to open serial device." << std::endl; return 1;}
+	if (serialDeviceID == -1) {ROS_ERROR("Unable to open serial device."); return 1;}
 
 	/* Main Node Function */
 	ros::spin();
