@@ -75,16 +75,16 @@ void actuateRobot(char read) {
 void moveForward() {
   for (int i = 0; i < 60; i++){
     if (i >= 30) {
-      L2_1.write(joint1_angles[i-30]);
-      L2_2.write(joint2_angles[i-30]);
+      L1_1.write(joint1_angles[i-30]);
+      L1_2.write(joint2_angles[i-30]);
     }
     L2_1.write(joint1_angles[i]);
     L2_2.write(joint2_angles[i]);
     delay(15);
   }
   for (int j = 30; j < 60; j++) {
-    L2_1.write(joint1_angles[j]);
-    L2_2.write(joint2_angles[j]);
+    L1_1.write(joint1_angles[j]);
+    L1_2.write(joint2_angles[j]);
     delay(15);
   }
 }
