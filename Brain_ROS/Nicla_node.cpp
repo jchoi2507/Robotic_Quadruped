@@ -19,29 +19,42 @@ Date: 4/15/2023
 using namespace std;
 
 /* Serial USB Connection from Arduino Nicla Setup */
-const char *port_connection = "/dev/tty[SOMETHING]";
+const char *port_connection = "/dev/ttyACM1";
 int baudrate = 9600;
 int serialDeviceID = serialOpen(port_connection, baudrate);
+
+char readSerial() {
+	bool keepReading = true;
+	char input; // This var will store the serially transmitted char from the Nicla
+	while (keepReading) {
+		if (serialDataAvail(serialDeviceID) > 0) {
+			input = serialGetchar(serialDeviceID);
+			serialFlush(serialDeviceID);
+			if (input == '\n') {} // Terminating byte read, ignore current iteration
+			else {
+				ROS_INFO("Message sending: %c", input);
+				keepReading = false;
+			}
+		}
+	}
+	return input;
+}
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "Nicla_node"); // Initialize node called "Nicla_node"
 	ros::NodeHandle node_handle;
 	ros::Publisher publisher = node_handle.advertise<std_msgs::Char>("topic_actuate", 1); // Topic name, publisher queue size
-	//ros::Rate rate(10); // 10 Hz
+	ros::Rate rate(100); // 100 Hz
 
-	if (serialDeviceID == -1) {std::cerr << "Unable to open serial device." << std::endl; return 1;}
-	std_msgs::Char msg; // This will store the serially transmitted char from the Nicla
+	if (serialDeviceID == -1) {ROS_ERROR("Unable to open serial device."); return 1;}
+	std_msgs::Char msg; // This var is the actual message being sent to the topic
+	bool keepReading = true; // This var determines when to stop reading from serial
 
-	while(ros::ok()) {
-		if (serialDataAvail(serialDeviceID) > 0) {
-			msg.data = serialGetchar(serialDeviceID);
-			if (msg.data == '\n') {} // Terminating byte read, ignore current iteration
-			else {
-				publisher.publish(msg);
-			}
-		}
+	while (ros::ok()) {
+		msg.data = readSerial();
+		publisher.publish(msg);
 		ros::spinOnce(); // Allows for backend to update on every iteration
-		//rate.sleep();  // Maintains the 10 messages/second frequency rate
+		rate.sleep();  // Maintains the 100 Hz message publishing rate
 	}
 	return 0;
 }
