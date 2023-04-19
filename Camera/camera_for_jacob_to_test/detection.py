@@ -143,7 +143,7 @@ def get_april_tag(img,april_tag_msgs): # take in april_msgs just for length to k
             rotation = (180 * tag.rotation()) / math.pi
 
             # if detected tag is within desired family and has an id within the range of the commands established above, send id #
-            if family_name(tag) == "TAG36H11" and tag_id >=0 and tag_id<=(len(april_tag_msgs)-1):
+            if family_name(tag) == "TAG36H11" and tag_id >=0 and tag_id<=(len(april_tag_msgs)-2): # subtract 2 b/c first msg is none (no april tag associated), and sub one to get index from length
                 return tag_id
             # to indicate if april tag detected but not within range of ids
             elif family_name(tag) != None:
@@ -156,7 +156,10 @@ def get_april_tag(img,april_tag_msgs): # take in april_msgs just for length to k
 # assuming only change led once all sensors taken into account
 # this just interprets the code for an led associated with a message to turn the appropriate leds on
 # msgs and corresponding leds are chosen in main.py (to allow for some flexibility with colors when testing)
-def led_from_message(msgs,leds,msg,ledR,ledG,ledB):
+def led_from_message(ledR,ledG,ledB,msg,msgs,leds): # msgs and leds are optional arguments if just want to turn an led on manually based on a letter from the code
+    # default msg='n' so if no positional args are passed to this fxn, all the leds turn off
+    leds_on = msg # otherwise if msg is not 'n', leds_on will change based on given msg to related led code to turn on proper leds
+
     # get index of sent message from list of messages
     index = msgs.index(msg)
 

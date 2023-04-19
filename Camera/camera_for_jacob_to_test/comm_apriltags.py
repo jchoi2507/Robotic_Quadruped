@@ -7,6 +7,8 @@
 
 #?? add stuff from this april tags version to thresholds
 
+# hold the phone with april tags about 1ft away from cam -- only tags 0 to 2 will show an led color, any others or nothing will cause nothing to happen ('n' is sent)
+
 from pyb import USB_VCP
 
 # for distance sensor
@@ -87,8 +89,8 @@ while True:
     # not sure if it makes sense to put this message decision in main b/c could have just sent this message from the function b/c already have if statement like this within the get_april_tags() function
     # but want to maintain deciding message out here in case other factors with april tag for message though not sure if this will happen
     if april_id >= 0:
-        # get message correlated with index of messages in list above
-        message = msgs[april_id]
+        # get message correlated with index of messages in list above (shifted one right from actual april id b/c first index of msgs is default 'n'
+        message = msgs[april_id+1]
 
     # --- choose message based on fusion of sensor info ---
     # possible messages: 'f' = forward, 's' = stop, 'd' = dance (this is what is physically feasible with the dog)
@@ -108,7 +110,7 @@ while True:
     if e_stop:
         if is_too_close:
             message = msgs[1] # 's' = stop
-            print("too close")
+            #print("too close")
 
 
     # --- manage leds based on final message ---
