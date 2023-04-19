@@ -1,8 +1,13 @@
+# current task: adding what can from apriltags code to detection library
+# next: add any main code need to main.py
+# then: make import statements only fxns I need so not importing whole libraries
+
 # import public libraries used in main file just in case (idk how Python file dependencies work, like if using a function from here in outside main.py does main.py use the import from main.py or in here?)
 import pyb # Import module for board related functions
 import sensor # Import the module for sensor related functions
 import image # Import module containing machine vision algorithms
 import time # Import module for tracking elapsed time
+import math
 
 # for distance sensor
 from machine import I2C
@@ -14,21 +19,28 @@ from vl53l1x import VL53L1X
 # at this point don't think need to make code as long as stick to this...
 
 
-def set_sensors(sensor):
+def set_sensors(sensor,april_on):
     # initialize distance (time-of-flight) sensor
     tof = VL53L1X(I2C(2))
 
     sensor.reset() # Resets the sensor
     sensor.set_pixformat(sensor.RGB565) # Sets the sensor to RGB
-    sensor.set_framesize(sensor.QVGA) # Sets the resolution to 320x240 px
+    # if using april tags, need to use smaller resolution for camera so don't run out of memory
+    if april_on:
+        sensor.set_framesize(sensor.QQVGA) # Sets the resolution to 160x120 px (if resolution is bigger may run out of memory w april tags)
+    else:
+        sensor.set_framesize(sensor.QVGA) # Sets the resolution to 320x240 px
     sensor.set_vflip(True) # Flips the image vertically
     sensor.set_hmirror(True) # Mirrors the image horizontally
     sensor.skip_frames(time = 2000) # Skip some frames to let the image stabilize
+    # the two commands below came with the example, but aren't supported by the Nicla Vision board. Still trying to figure out how to do this with the Nicla Vision, but code works fine for now so maybe not necessary
+    #sensor.set_auto_gain(False)  # must turn this off to prevent image washout...
+    #sensor.set_auto_whitebal(False)  # must turn this off to prevent image washout...
 
     return tof
 
 # function returns True if orange blob (otherwise inputted msg stays, default from main if 'f')
-def is_orange(clock,img,thresholds):
+def is_orange(img,thresholds):
     # message is default 'forward' -- only stop (send 's') if see orange
     msg = False
 
@@ -62,7 +74,7 @@ def is_orange(clock,img,thresholds):
         ledG.on()
 
         pyb.delay(50) # Pauses the execution for 50ms
-        #print(clock.fps()) # Prints the framerate to the serial console
+        #print(clock.fps()) # Prints the framerate to the serial console, need to import clock if want to do
         #print("x", blob.cx(), "y", blob.cy())
     '''
 
@@ -91,20 +103,93 @@ def is_too_close(tof,STOP_DIST):
 
     return msg
 
+# will try with function this references also defined in library but not sure if need to reference in main.py if main.py doesn't need to know about it if just called within this function
+# function to get name of family of a detected tag
+def family_name(tag):
+    if(tag.family() == image.TAG16H5):
+        return "TAG16H5"
+    if(tag.family() == image.TAG25H7):
+        return "TAG25H7"
+    if(tag.family() == image.TAG25H9):
+        return "TAG25H9"
+    if(tag.family() == image.TAG36H10):
+        return "TAG36H10"
+    if(tag.family() == image.TAG36H11):
+
+        return "TAG36H11"
+    if(tag.family() == image.ARTOOLKIT):
+        return "ARTOOLKIT"
+
+# function to detect an april tag
+# goal is to find if id is in chosen family (36H11) and within range needed for inputted list of commands (start id's from 0 and go up for as many messages as sending)
+# returns: 0 to (+) #'s -- for any april tag in designated family and within range of # of messages
+#          -1 -- april tag detected but not in desired family
+#          -2 -- no april tags detected at all
+def get_april_tag(img,april_tag_msgs): # take in april_msgs just for length to know range of ids looking for, but not actually choosing message within here b/c in main may have other sensors to take into account and would rather choose from all sensors than choose now and override later
+
+    tag_families = 0
+    tag_families |= image.TAG36H11 # (default family)
+
+    # 'loop' will only run once if any b/c of return within...only need to id one april tag anyways for now...but could adjust later for two
+    # loop through tags (detect in line below)
+    for tag in img.find_apriltags(families=tag_families): # defaults to TAG36H11 without "families".
+            # comment out when not using IDE
+            img.draw_rectangle(tag.rect(), color = (255, 0, 0))
+            img.draw_cross(tag.cx(), tag.cy(), color = (0, 255, 0))
+
+            # get useful info about tag detected
+            tag_fam = family_name(tag)
+            tag_id = tag.id()
+            rotation = (180 * tag.rotation()) / math.pi
+
+            # if detected tag is within desired family and has an id within the range of the commands established above, send id #
+            if family_name(tag) == "TAG36H11" and tag_id >=0 and tag_id<=(len(april_tag_msgs)-1):
+                return tag_id
+            # to indicate if april tag detected but not within range of ids
+            elif family_name(tag) != None:
+                return -1
+
+    # if no april tags at all are detected
+    return -2
+
 # function to run right before send final message to change led based on final message (after sensor fusion)
 # assuming only change led once all sensors taken into account
-def led_from_message(msg,ledR,ledG,ledB):
-    if msg == 'f':
+# this just interprets the code for an led associated with a message to turn the appropriate leds on
+# msgs and corresponding leds are chosen in main.py (to allow for some flexibility with colors when testing)
+def led_from_message(msgs,leds,msg,ledR,ledG,ledB):
+    # get index of sent message from list of messages
+    index = msgs.index(msg)
+
+    # get leds to turn on based on message
+    leds_on = leds[index]
+
+    # code for leds list: these are only possible strings I will input
+    # g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue
+    # maybe would have been more efficient to directly write led objects in but strings are easier to pass I think
+    # or do for loop through list of leds to turn on? but just need for one message...
+    if leds_on == 'g':
         ledG.on()
         ledR.off()
         ledB.off()
-    elif msg == 'x':
-        ledB.on()
-        ledR.off()
+    elif leds_on == 'r':
         ledG.off()
-    elif msg == 's':
         ledR.on()
         ledB.off()
+    elif leds_on == 'b':
         ledG.off()
+        ledR.off()
+        ledB.on()
+    elif leds_on == 'gb':
+        ledG.on()
+        ledR.off()
+        ledB.on()
+    elif leds_on == 'gr':
+        ledG.on()
+        ledR.on()
+        ledB.off()
+    elif leds_on == 'rb':
+        ledG.off()
+        ledR.on()
+        ledB.on()
 
 
