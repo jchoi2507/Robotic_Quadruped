@@ -13,20 +13,24 @@ sensor.skip_frames(time = 2000)
 #sensor.set_auto_gain(False)  # must turn this off to prevent image washout...
 #sensor.set_auto_whitebal(False)  # must turn this off to prevent image washout...
 
+
 # initiate LEDs to indicate if april tag detected or not
 ledRed = pyb.LED(1) # Initiates the red led
 ledGreen = pyb.LED(2) # Initiates the green led
 ledBlue = pyb.LED(3)
+
 
 # list of discrete commands to send to brain
 # just use index (0, 1, 2, 3, etc.) as the april tag id
 # (april tag ids go from 0 - whatever #, so say first command in list has id=0, second has id=1, etc., instead of making a list of ids...)
 commands = ['f', 'b', 'l', 'r', 's'] # forward, backward, left, right, stop
 # combos of leds to turn on for diff commands (extra indicator, and to test externally without wifi and without delay)
+'''
 leds_for_commands = [[ledGreen],[ledBlue],[ledBlue,ledGreen],[ledBlue,ledRed],[ledRed]]
 # initialize message to send if no tag detected (no command, so tell brain to do nothing)
-msg = 'do nothing'
 
+msg = 'do nothing'
+'''
 
 # Note! Unlike find_qrcodes the find_apriltags method does not need lens correction on the image to work.
 
@@ -58,10 +62,11 @@ def family_name(tag):
     if(tag.family() == image.TAG36H10):
         return "TAG36H10"
     if(tag.family() == image.TAG36H11):
+        
         return "TAG36H11"
     if(tag.family() == image.ARTOOLKIT):
         return "ARTOOLKIT"
-
+'''
 # function to turn on multiple leds from a list at the 'same' time
 def on_leds(leds):
     for led in leds:
@@ -71,6 +76,7 @@ def off_all_leds():
     ledBlue.off()
     ledRed.off()
     ledGreen.off()
+    '''
 
 # function to get message for detected april tags (right now only return one message...so most last tag in tags, but for now we shouldn't ever have two tags detected at the same time
 # could adapt to send other info like rotation if want to know direction of robot relative to tag

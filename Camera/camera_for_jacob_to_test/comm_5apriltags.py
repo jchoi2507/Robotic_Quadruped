@@ -55,8 +55,8 @@ tof = detection.set_sensors(sensor,using_april_tags) # ??? should I always setup
 # list of discrete commands to send to brain
 # just use index (0, 1, 2, 3, etc.) as the april tag id
 # (april tag ids go from 0 - whatever #, so say first command in list has id=0, second has id=1, etc., instead of making a list of ids...)
-msgs = ['s', 'f', 'd'] # stop, forward, dance
-leds = ['r', 'g', 'b'] # list of led colors to choose related to each message -- g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue
+msgs = ['n','s', 'f', 'd'] # nothing, stop, forward, dance
+leds = ['n','r', 'g', 'b'] # list of led colors to choose related to each message -- g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue, n = none (no leds on)
 # ?? should do in 2d array? could be more edge-case friendly to check that these are same length...but I trust myself to write the code hopefully, and take care of incorrect characters but not possible b/c no user input only I hardcoding and I would find error
 # ??? should names be diff btwn here and libraries???
 # -----------------------
@@ -65,7 +65,7 @@ leds = ['r', 'g', 'b'] # list of led colors to choose related to each message --
 while True:
 
     # initialize message to edit based on info from sensors
-    message = msgs[0] # default is stopped
+    message = msgs[0] # default is nothing, led should be off
 
     clock.tick() # Advances the clock
 
@@ -107,13 +107,13 @@ while True:
     # leave off if only want to stop if certain objects are too close
     if e_stop:
         if is_too_close:
-            message = msgs[0] # 's' = stop
+            message = msgs[1] # 's' = stop
             print("too close")
 
 
     # --- manage leds based on final message ---
     # ??? should I switch to do within specific sensors?
-    detection.led_from_message(msgs,leds,message,ledRed,ledGreen,ledBlue)
+    detection.led_from_message(ledRed,ledGreen,ledBlue,message,msgs,leds)
     # ------------------------------------------
 
 

@@ -164,7 +164,7 @@ def led_from_message(msgs,leds,msg,ledR,ledG,ledB):
     leds_on = leds[index]
 
     # code for leds list: these are only possible strings I will input
-    # g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue
+    # g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue, n = none (no leds on)
     # maybe would have been more efficient to directly write led objects in but strings are easier to pass I think
     # or do for loop through list of leds to turn on? but just need for one message...
     if leds_on == 'g':
@@ -191,5 +191,9 @@ def led_from_message(msgs,leds,msg,ledR,ledG,ledB):
         ledG.off()
         ledR.on()
         ledB.on()
+    elif leds_on == 'n':
+        ledG.off()
+        ledR.off()
+        ledB.off()
 
 
