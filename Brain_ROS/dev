@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Setup the 4 pane window configuration w/ appropriate ROS launch files
+
+tmux new-session -d -s "ROSPanes" roscore # Launch ROS master node on detached session
+tmux split-window -v # Split window vertically
+tmux send 'sleep 8' ENTER; # Wait 8 seconds to allow ROS master AND RP2040 subscriber nodes to initialize
+tmux send 'rosrun robotic_quadruped_pkg Nicla_node' ENTER; # Launch Nicla node
+tmux split-window -h # Split window horizontally
+tmux send 'sleep 5' ENTER; # Buffer time for master node only
+tmux send 'rosrun robotic_quadruped_pkg RP2040_node2' ENTER; # Launch RP2040 node #2
+tmux select-pane -t 0
+tmux split-window -h
+tmux send 'sleep 5' ENTER; # Buffer time for master node only
+tmux send 'rosrun robotic_quadruped_pkg RP2040_node1' ENTER; # Launch RP2040 node #1
+tmux select-pane -t 0
+tmux -2 attach-session -d # Re-attach session
