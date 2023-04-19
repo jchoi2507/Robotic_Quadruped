@@ -1,3 +1,23 @@
+# Rose Kitz
+# Wed 4/19/23
+# ME35
+# Program to detect april tags using the Arduino Nicla Vision cam to direct quadruped robot
+# currently, april tag ids from the 36H11 family in the range from 0 to 2 can be detected, because only 3 messages are necessary to direct the robot
+# when an april tag is detected, the related message for how the robot should move is sent over serial to the brain (Raspi). If nothing or a
+# hold the phone with april tags about 1ft away from cam -- only tags 0 to 2 will show an led color, any others or nothing will cause nothing to happen ('n' is sent)
+
+# I created my own library, 'detection,' to store the image processing code, to simply receive outputs of T/F for if certain colors/objects are detected, or #s for things like april tags
+
+# NOTE: You can easily/quickly change the messages you want to send from the camera to the brain for any number of april tags you want
+# Simply go to line 79 below and add one-character strings as elements to the 'msgs' list to add what strings can be sent over serial to the RasPi
+# Then, on line 80, add strings as elements to choose what led color you want to correspond to each action.
+# The code is listed in the comment on that line, only 6 color combinations are possible with the on-board led and must be entered as lowercase strings in the order mentioned in the code.
+# To turn all leds off, enter 'n'.
+# The index # of the message and its corresponding color is then one more than the april tag id # that will trigger that message (i.e. 's' at index 1 in msgs = april tag id 0)
+# since it was necessary to add a 'nothing' command to the list of messages to distinguish between when stop is called and when nothing is actually desired to happen with an april tag
+
+# -------------------------------------------------------------------------------
+
 # import the fxns for diff methods of detection and keep this simple communication code?
 # get the image here and use as param for function within detection file then get direction as result
 # should I be doing classes???
@@ -7,19 +27,17 @@
 
 #?? add stuff from this april tags version to thresholds
 
-# hold the phone with april tags about 1ft away from cam -- only tags 0 to 2 will show an led color, any others or nothing will cause nothing to happen ('n' is sent)
 
-from pyb import USB_VCP
+from pyb import USB_VCP, LED # pyb is for board-related functions
 
 # for distance sensor
 from machine import I2C
 from vl53l1x import VL53L1X
 
 # !!! change to from ___ import __
-import pyb # Import module for board related functions
 import sensor # Import the module for sensor related functions
 import image # Import module containing machine vision algorithms
-import time # Import module for tracking elapsed time
+from time import sleep, clock # Import module for tracking elapsed time
 import math
 
 # import detection stuff
@@ -28,11 +46,11 @@ from thresholds import thresholdsOrange, STOP_MAX
 
 # --- set-up leds, clock ---
 # ??? ctrl leds from here once get final message, or within library? I guess harder to change on the fly if in library but then simpler code here...
-ledRed = pyb.LED(1) # Initiates the red led
-ledGreen = pyb.LED(2) # Initiates the green led
-ledBlue = pyb.LED(3) # Initiates the blue led
+ledRed = LED(1) # Initiates the red led
+ledGreen = LED(2) # Initiates the green led
+ledBlue = LED(3) # Initiates the blue led
 
-clock = time.clock() # Instantiates a clock object
+clock = clock() # Instantiates a clock object
 # --------------------------
 
 # set-up usb for serial communication
@@ -57,8 +75,9 @@ tof = detection.set_sensors(sensor,using_april_tags) # ??? should I always setup
 # list of discrete commands to send to brain
 # just use index (0, 1, 2, 3, etc.) as the april tag id
 # (april tag ids go from 0 - whatever #, so say first command in list has id=0, second has id=1, etc., instead of making a list of ids...)
-msgs = ['n','s', 'f', 'd'] # nothing, stop, forward, dance
-leds = ['n','r', 'g', 'b'] # list of led colors to choose related to each message -- g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue, n = none (no leds on)
+# -------------------- CHANGE DESIRED MESSAGES & RELATED LEDS HERE -----------------------------------
+msgs = ['n','s','f','r','l','d'] # nothing, stop, forward, dance
+leds = ['n','r','g','gb','gr','b'] # list of led colors to choose related to each message -- g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue, n = none (no leds on)
 # ?? should do in 2d array? could be more edge-case friendly to check that these are same length...but I trust myself to write the code hopefully, and take care of incorrect characters but not possible b/c no user input only I hardcoding and I would find error
 # ??? should names be diff btwn here and libraries???
 # -----------------------
@@ -126,11 +145,11 @@ while True:
         # if usb is connected, send serial message
         if (usb.isconnected()):
             usb.write(message) # message is type str
-            time.sleep(time_btwn_msgs)
+            sleep(time_btwn_msgs)
     # for testing just w Nicla (not connected to brain)
     else:
         # for testing just w nicla
         print(message)
-        time.sleep(time_btwn_msgs)
+        sleep(time_btwn_msgs)
     # -------------------
 

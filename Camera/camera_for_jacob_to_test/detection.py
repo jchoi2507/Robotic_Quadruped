@@ -2,12 +2,16 @@
 # next: add any main code need to main.py
 # then: make import statements only fxns I need so not importing whole libraries
 
+
+#from pyb import LED # pyb is for board-related functions
+
+from time import sleep, clock # Import module for tracking elapsed time
+
 # import public libraries used in main file just in case (idk how Python file dependencies work, like if using a function from here in outside main.py does main.py use the import from main.py or in here?)
-import pyb # Import module for board related functions
-import sensor # Import the module for sensor related functions
-import image # Import module containing machine vision algorithms
-import time # Import module for tracking elapsed time
-import math
+from pyb import delay # Import module for board related functions
+import sensor # Import the module for sensor related functions (using a lot so just import whole libarary)
+import image # Import module containing machine vision algorithms (using a lot so just import whole libarary)
+from math import pi
 
 # for distance sensor
 from machine import I2C
@@ -140,7 +144,7 @@ def get_april_tag(img,april_tag_msgs): # take in april_msgs just for length to k
             # get useful info about tag detected
             tag_fam = family_name(tag)
             tag_id = tag.id()
-            rotation = (180 * tag.rotation()) / math.pi
+            rotation = (180 * tag.rotation()) / pi
 
             # if detected tag is within desired family and has an id within the range of the commands established above, send id #
             if family_name(tag) == "TAG36H11" and tag_id >=0 and tag_id<=(len(april_tag_msgs)-2): # subtract 2 b/c first msg is none (no april tag associated), and sub one to get index from length
