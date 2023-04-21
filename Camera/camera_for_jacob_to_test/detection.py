@@ -1,8 +1,12 @@
-# current task: adding what can from apriltags code to detection library
-# next: add any main code need to main.py
-# then: make import statements only fxns I need so not importing whole libraries
+# Rose Kitz
+# 4/21/23
+# This is a library I created to mostly store the detection methods to find objects, colors, shapes, etc. with the Nicla Vision camera
+# most of the functions return either True/False or a number based on whether something is detected in the image, with simply the img snapshot as an input
+# so that implementing these detection methods is easy in the main file
+
 
 # import public libraries used in main file just in case (idk how Python file dependencies work, like if using a function from here in outside main.py does main.py use the import from main.py or in here?)
+# ??? do I need the imports in here? or ok if just in the main file?
 from pyb import delay # Import module for board related functions
 import sensor # Import the module for sensor related functions
 import image # Import module containing machine vision algorithms
@@ -12,12 +16,10 @@ from math import pi
 from machine import I2C
 from vl53l1x import VL53L1X
 
-# ??? do I need the imports in here? or ok if just in the main file?
-
-# messages: 's' = stop, 'f' = forward, 'l' = left, 'r' = right
-# at this point don't think need to make code as long as stick to this...
 
 
+
+# function to set up camera sensor, w adjustments based on detection method (i.e. need smaller frame for april or circles b/c algo takes more memory
 def set_sensors(sensor,april_on,circles_on):
     # initialize distance (time-of-flight) sensor
     tof = VL53L1X(I2C(2))
@@ -38,7 +40,7 @@ def set_sensors(sensor,april_on,circles_on):
 
     return tof
 
-# function returns True if orange blob (otherwise inputted msg stays, default from main if 'f')
+# function returns True if blob has color within inputted threshold range
 def is_color(img,thresholds):
     # message is default 'forward' -- only stop (send 's') if see orange
     msg = False
@@ -79,7 +81,7 @@ def is_color(img,thresholds):
 
     return msg, blobs
 
-# function to take list of blobs (of certain color threshold) and detect if any of them are also a circle
+# function to take list of blobs (of certain color threshold) and detect if any of them are also a circle (given input of desired roundness)
 def is_blob_round(list_blobs,desired_roundness):
     msg = False
 
@@ -87,7 +89,7 @@ def is_blob_round(list_blobs,desired_roundness):
     # so check all color blobs if any are circles (vs. just checking the first one might be not a circle and miss a ball)
     for blob in list_blobs:
         roundness = blob.roundness() # if 1, it is a circle
-        print(roundness)
+        #print(roundness)
 
         if roundness <= desired_roundness: # docs say 1 is circle, but from testing square is 1
             msg = True
@@ -95,7 +97,7 @@ def is_blob_round(list_blobs,desired_roundness):
     return msg
 
 
-# function to take list of blobs (of certain color threshold) and detect if any of them are also a circle
+# function to take list of blobs (of certain color threshold) and returns True if any have convexity higher than desired min (based on testing w ball)
 def is_blob_convex(list_blobs,desired_convex):
     msg = False
 
@@ -103,7 +105,7 @@ def is_blob_convex(list_blobs,desired_convex):
     # so check all color blobs if any are circles (vs. just checking the first one might be not a circle and miss a ball)
     for blob in list_blobs:
         convexity = blob.convexity() # if 1, it is a circle
-        print(convexity)
+        #print(convexity)
 
         if convexity >= desired_convex: # docs say 1 is square, but from testing circle is higher
             msg = True
@@ -114,7 +116,7 @@ def is_blob_convex(list_blobs,desired_convex):
 
 # function return true if circle is found
 # !!! later make coords inputs if want to adjust in main.py
-def is_circle(img):
+def is_circle(img,thresh,are_testing):
     msg = False
     # Circle objects have four values: x, y, r (radius), and magnitude. The
     # magnitude is the strength of the detection of the circle. Higher is
@@ -128,14 +130,16 @@ def is_circle(img):
 
     # r_min, r_max, and r_step control what radiuses of circles are tested.
     # Shrinking the number of tested circle radiuses yields a big performance boost.
-    circles = img.find_circles(threshold = 2000, x_margin = 10, y_margin = 10, r_margin = 10,
-            r_min = 2, r_max = 100, r_step = 2)
+    circles = img.find_circles(threshold = thresh, x_margin = 10, y_margin = 10, r_margin = 10,
+            r_min = 30, r_max = 90, r_step = 2)
 
     if len(circles) > 0:
         msg = True
 
-        for c in circles:
-            img.draw_circle(c.x(), c.y(), c.r(), color = (255, 0, 0))
+        # only draw if in testing mode (connected to PC)
+        if are_testing:
+            for c in circles:
+                img.draw_circle(c.x(), c.y(), c.r(), color = (255, 0, 0))
 
     return msg
 
@@ -202,7 +206,7 @@ def get_april_tag(img,april_tag_msgs): # take in april_msgs just for length to k
             rotation = (180 * tag.rotation()) / pi
 
             # if detected tag is within desired family and has an id within the range of the commands established above, send id #
-            if family_name(tag) == "TAG36H11" and tag_id >=0 and tag_id<=(len(april_tag_msgs)-2): # subtract 2 b/c first msg is none (no april tag associated), and sub one to get index from length
+            if family_name(tag) == "TAG36H11" and tag_id >=0 and tag_id<=(len(april_tag_msgs)-1): # subtract 1 to get index from length
                 return tag_id
             # to indicate if april tag detected but not within range of ids
             elif family_name(tag) != None:

@@ -61,7 +61,7 @@ clock = clock() # Instantiates a clock object
 usb = USB_VCP()
 
 # toggle to change how code executes (prints if testing, sends over usb if connected to brain)
-testing = True
+testing = False
 
 # toggle based on if detecting april tags below b/c when setting up sensors need to use lower resolution to have enough memory when using april tags
 # !!! could later implement way if code can detect itself if april tag functions from my library are being used to turn on the right resolution
