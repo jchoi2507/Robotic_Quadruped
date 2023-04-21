@@ -22,6 +22,7 @@ Servo R1_1; // Right 1 Joint 1
 Servo R1_2; // Right 1 Joint 2
 Servo R2_1; // Right 2 Joint 1
 Servo R2_2; // Right 2 Joint 2
+Servo tail; // Tail
 
 /* Angle Arrays for Forward Movement */
 int joint1_angles_forward[80] = {143,144,143,142,140,139,138,138,138,139,141,142,144,145,147,148,150,151,153,154,156,158,160,162,165,168,172,175,178,180,180,178,177,175,174,172,171,170,168,167,165,164,163,162,160,159,158,156,155,154,153,152,151,149,148,147,146,145,144,143,143, 142, 141, 140, 139, 138, 138, 137, 136, 135, 134, 134, 133, 132, 132, 131, 131, 130, 130, 129};
@@ -44,6 +45,7 @@ void setup() {
   R1_2.attach(7);
   R2_1.attach(8);
   R2_2.attach(9);
+  tail.attach(17);
 }
 
 void loop() {
@@ -101,6 +103,8 @@ void moveForward() {
     R1_2.write(joint2_angles_forward_secondary[j]);
     delay(15);
   }
+  delay(2000);
+  moveStand();
 }
 
 /*
@@ -173,4 +177,12 @@ void moveDance() {
     R2_2.write(joint2_angles_dance[i]);
     delay(15);
   }
+  for (int i = 0; i < 10; i++) {
+    tail.write(0);
+    delay(500);
+    tail.write(50);
+    delay(500);
+  }
+  tail.write(25);
+  delay(15);
 }
