@@ -8,6 +8,8 @@
     # get MANUALLY (easiest) by taking snapshot of thing then Tools > Machine Vision > Threshold Editor
 
 thresholdsOrange = (33, 55, 29, 58, 24, 70)
+thresholdsTennisBall = (31, 92, -24, -3, 24, 41)
+thresholdsTennisBall2 = (37, 91, -14, 3, 15, 44)
 
 
 STOP_MAX = 150 #[mm]

@@ -55,7 +55,7 @@ while True:
 
     # --- get info from sensors ---
     # check for direction based on color detected
-    is_orange = detection.is_orange(clock,img,[thresholdsOrange]) # add more thresholds imported inside [] if applicable
+    is_orange = detection.is_color(clock,img,[thresholdsOrange]) # add more thresholds imported inside [] if applicable
     # check if anything is too close (always override any other message if something is too close so robot will stop)
     is_too_close = detection.is_too_close(tof,STOP_MAX)
     # -----------------------------

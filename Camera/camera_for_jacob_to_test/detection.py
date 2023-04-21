@@ -2,17 +2,13 @@
 # next: add any main code need to main.py
 # then: make import statements only fxns I need so not importing whole libraries
 
-
-#from pyb import LED # pyb is for board-related functions
-
-from time import sleep, clock # Import module for tracking elapsed time
-
 # import public libraries used in main file just in case (idk how Python file dependencies work, like if using a function from here in outside main.py does main.py use the import from main.py or in here?)
 from pyb import delay # Import module for board related functions
 import sensor # Import the module for sensor related functions (using a lot so just import whole libarary)
-import image # Import module containing machine vision algorithms (using a lot so just import whole libarary)
+import sensor # Import the module for sensor related functions
+import image # Import module containing machine vision algorithms
+from time import sleep, clock # Import module for tracking elapsed time
 from math import pi
-
 # for distance sensor
 from machine import I2C
 from vl53l1x import VL53L1X
@@ -23,14 +19,14 @@ from vl53l1x import VL53L1X
 # at this point don't think need to make code as long as stick to this...
 
 
-def set_sensors(sensor,april_on):
+def set_sensors(sensor,april_on,circles_on):
     # initialize distance (time-of-flight) sensor
     tof = VL53L1X(I2C(2))
 
     sensor.reset() # Resets the sensor
     sensor.set_pixformat(sensor.RGB565) # Sets the sensor to RGB
     # if using april tags, need to use smaller resolution for camera so don't run out of memory
-    if april_on:
+    if april_on or circles_on:
         sensor.set_framesize(sensor.QQVGA) # Sets the resolution to 160x120 px (if resolution is bigger may run out of memory w april tags)
     else:
         sensor.set_framesize(sensor.QVGA) # Sets the resolution to 320x240 px
@@ -44,7 +40,7 @@ def set_sensors(sensor,april_on):
     return tof
 
 # function returns True if orange blob (otherwise inputted msg stays, default from main if 'f')
-def is_orange(img,thresholds):
+def is_color(img,thresholds):
     # message is default 'forward' -- only stop (send 's') if see orange
     msg = False
 
@@ -81,6 +77,66 @@ def is_orange(img,thresholds):
         #print(clock.fps()) # Prints the framerate to the serial console, need to import clock if want to do
         #print("x", blob.cx(), "y", blob.cy())
     '''
+
+    return msg, blobs
+
+# function to take list of blobs (of certain color threshold) and detect if any of them are also a circle
+def is_blob_round(list_blobs,desired_roundness):
+    msg = False
+
+    # if any of the blobs of already detected color (that is why in blob list) are a circle, say a tennis ball is found
+    # so check all color blobs if any are circles (vs. just checking the first one might be not a circle and miss a ball)
+    for blob in list_blobs:
+        roundness = blob.roundness() # if 1, it is a circle
+        print(roundness)
+
+        if roundness <= desired_roundness: # docs say 1 is circle, but from testing square is 1
+            msg = True
+
+    return msg
+
+
+# function to take list of blobs (of certain color threshold) and detect if any of them are also a circle
+def is_blob_convex(list_blobs,desired_convex):
+    msg = False
+
+    # if any of the blobs of already detected color (that is why in blob list) are a circle, say a tennis ball is found
+    # so check all color blobs if any are circles (vs. just checking the first one might be not a circle and miss a ball)
+    for blob in list_blobs:
+        convexity = blob.convexity() # if 1, it is a circle
+        print(convexity)
+
+        if convexity >= desired_convex: # docs say 1 is square, but from testing circle is higher
+            msg = True
+
+    return msg
+
+
+
+# function return true if circle is found
+# !!! later make coords inputs if want to adjust in main.py
+def is_circle(img):
+    msg = False
+    # Circle objects have four values: x, y, r (radius), and magnitude. The
+    # magnitude is the strength of the detection of the circle. Higher is
+    # better...
+
+    # `threshold` controls how many circles are found. Increase its value
+    # to decrease the number of circles detected...
+
+    # `x_margin`, `y_margin`, and `r_margin` control the merging of similar
+    # circles in the x, y, and r (radius) directions.
+
+    # r_min, r_max, and r_step control what radiuses of circles are tested.
+    # Shrinking the number of tested circle radiuses yields a big performance boost.
+    circles = img.find_circles(threshold = 2000, x_margin = 10, y_margin = 10, r_margin = 10,
+            r_min = 2, r_max = 100, r_step = 2)
+
+    if len(circles) > 0:
+        msg = True
+
+        for c in circles:
+            img.draw_circle(c.x(), c.y(), c.r(), color = (255, 0, 0))
 
     return msg
 
@@ -196,6 +252,10 @@ def led_from_message(ledR,ledG,ledB,msg,msgs,leds): # msgs and leds are optional
         ledB.off()
     elif leds_on == 'rb':
         ledG.off()
+        ledR.on()
+        ledB.on()
+    elif leds_on == 'rgb':
+        ledG.on()
         ledR.on()
         ledB.on()
     elif leds_on == 'n':
