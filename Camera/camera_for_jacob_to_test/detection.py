@@ -4,7 +4,6 @@
 
 # import public libraries used in main file just in case (idk how Python file dependencies work, like if using a function from here in outside main.py does main.py use the import from main.py or in here?)
 from pyb import delay # Import module for board related functions
-import sensor # Import the module for sensor related functions (using a lot so just import whole libarary)
 import sensor # Import the module for sensor related functions
 import image # Import module containing machine vision algorithms
 from time import sleep, clock # Import module for tracking elapsed time
