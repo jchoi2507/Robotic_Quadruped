@@ -91,7 +91,7 @@ def is_blob_round(list_blobs,desired_roundness):
         roundness = blob.roundness() # if 1, it is a circle
         #print(roundness)
 
-        if roundness <= desired_roundness: # docs say 1 is circle, but from testing square is 1
+        if roundness >= desired_roundness: # docs say 1 is circle, but from testing square is 1
             msg = True
 
     return msg

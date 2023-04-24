@@ -46,7 +46,7 @@ import math
 
 # import detection stuff
 import detection # self-created library
-from thresholds import thresholdsOrange, thresholdsTennisBall, thresholdsTennisBall2, STOP_MAX
+from thresholds import thresholdsOrange, thresholdsTennisBall, thresholdsTennisBall2, thresholdsTennisBall3, STOP_MAX
 
 # --- set-up leds, clock ---
 # ??? ctrl leds from here once get final message, or within library? I guess harder to change on the fly if in library but then simpler code here...
@@ -110,17 +110,22 @@ while True:
     # get True/False if image snapshot has tennis ball color in it, return blobs to find characteristics of later
     # -- input params: image snapshot, color thresholds
     # -- outputs: T/F if blob is within color thresholds, blobs object
-    is_tennis_color, blobs = detection.is_color(img,[thresholdsTennisBall2]) # add more thresholds imported inside [] if applicable
+    is_tennis_color, blobs = detection.is_color(img,[thresholdsTennisBall3]) # add more thresholds imported inside [] if applicable
 
     # get T/F if any of the green blobs are circular & curved enough (params from testing)
     # -- input params: blobs object, max/min roundness/convexity
     # -- output: T/F if any blob in blobs is circular/convex enough (compared to tested input params below)
-    is_blob_circle = detection.is_blob_round(blobs,0.50) # (blobs,max_roundness) -- docs say 1 is a perfect circle, but testing had a square at 1...
-    is_blob_curved = detection.is_blob_convex(blobs,0.40) # (blobs,min_convex)
+    is_blob_circle = detection.is_blob_round(blobs,0.90) # (blobs,max_roundness) -- docs say 1 is a perfect circle, but testing had a square at 1...after testing w diff thresholds actually this is true just w small L range threshold roundness goes down a lot
+    is_blob_curved = detection.is_blob_convex(blobs,0.35) # (blobs,min_convex)
 
     # draw circle around first blob while testing
     if (len(blobs) > 0) and testing:
         img.draw_circle(blobs[0].enclosing_circle())
+
+        for blob in blobs:
+            print(blob.roundness())
+        #print(blobs[0].roundness())
+
 
     # get if circle is detected in image
     # -- input params: image snapshot
