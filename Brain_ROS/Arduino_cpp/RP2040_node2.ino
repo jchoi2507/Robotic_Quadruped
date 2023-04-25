@@ -75,7 +75,9 @@ void actuateRobot(char read) {
       moveRight();
       break;
     case 'd':
+      digitalWrite(LED_BUILTIN, HIGH);
       moveDance();
+      digitalWrite(LED_BUILTIN, LOW);
       break;
     default:
       break;
@@ -86,19 +88,21 @@ void moveForward() {
   int secondary = 0;
   for (int i = 0; i < 80; i++){
     if (i >= 30) {
-      L2_1.write(joint1_angles_forward_secondary[secondary]);
-      L2_2.write(joint2_angles_forward_secondary[secondary]);
+      L1_1.write(joint1_angles_forward_secondary[secondary]);
+      L1_2.write(joint2_angles_forward_secondary[secondary]);
       secondary++;
     }
-    L1_1.write(joint1_angles_forward[i]);
-    L1_2.write(joint2_angles_forward[i]);
+    L2_1.write(joint1_angles_forward[i]);
+    L2_2.write(joint2_angles_forward[i]);
     delay(15);
   }
   for (int j = 50; j < 100; j++) {
-    L2_1.write(joint1_angles_forward_secondary[j]);
-    L2_2.write(joint2_angles_forward_secondary[j]);
+    L1_1.write(joint1_angles_forward_secondary[j]);
+    L1_2.write(joint2_angles_forward_secondary[j]);
     delay(15);
   }
+  delay(2000);
+  moveStand();
 }
 
 /*
@@ -147,29 +151,20 @@ void moveStand() {
 void moveLeft() {}
 void moveRight() {}
 void moveDance() {
-  for (int i = 0; i < 2; i++) { // Go up and down 2 times
-    for (int j = 0; j < 20; j++) {
-      L1_1.write(joint1_angles_dance[j]);
-      L2_1.write(joint1_angles_dance[j]);
-      L1_2.write(joint2_angles_dance[j]);
-      L2_2.write(joint2_angles_dance[j]);
-      delay(15);
-    }
-  }
-  delay(1500);
   for (int i = 0; i < 10; i++) {
     L1_1.write(joint1_angles_dance[i]);
-    L2_1.write(joint1_angles_dance[i]);
     L1_2.write(joint2_angles_dance[i]);
+    L2_1.write(joint1_angles_dance[i]);
     L2_2.write(joint2_angles_dance[i]);
     delay(15);
   }
-  delay(5000);
+  delay(3000);
   for (int i = 10; i < 20; i++) {
     L1_1.write(joint1_angles_dance[i]);
-    L2_1.write(joint1_angles_dance[i]);
     L1_2.write(joint2_angles_dance[i]);
+    L2_1.write(joint1_angles_dance[i]);
     L2_2.write(joint2_angles_dance[i]);
     delay(15);
   }
+  delay(3000);
 }
