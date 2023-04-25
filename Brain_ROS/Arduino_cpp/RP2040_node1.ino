@@ -6,12 +6,13 @@ Date: 4/15/2023
 - Controls 4x servos on the quadruped's RIGHT side
 - Establishes serial connection between RPi and Arduino RP2040
 - Checks for incoming messages, depending on the message, actuates
-  one of 5 movements:
+  one of 6 movements:
     'f': Forward
     's': Stand
     'l': Turn Left
     'r': Turn Right
     'd': Dance!
+    't': Wag tail
 */
 
 #include <Servo.h>
@@ -35,7 +36,8 @@ int joint2_angles_forward_secondary[100] = {149, 149, 149, 149, 149, 150, 150, 1
 //int joint2_angles[60] = {149,150,154,159,164,170,174,177,179,180,180,179,178,178,177,177,176,175,175,174,173,171,168,164,158,151,143,137,132,128,128,130,131,133,134,135,137,138,139,140,141,142,142,143,144,145,145,146,146,147,147,148,148,148,149,149,149,149,149,149};
 
 /* Angle Arrays for Dance Movement */
-int joint1_angles_dance[20] = {143,145,147,149,151,153,154,156,158,159,159,158,156,154,153,151,149,147,145,143};
+int joint1_angles_dance_orig[20] = {143,145,147,149,151,153,154,156,158,159,159,158,156,154,153,151,149,147,145,143};
+int joint1_angles_dance[20] = {143,141,139,137,135,133,132,130,128,127,127,128,130,132,133,135,137,139,141,143};
 int joint2_angles_dance[20] = {149,153,157,161,165,168,172,175,178,180,180,178,175,172,168,165,161,157,153,149};
 
 void setup() {
@@ -81,6 +83,8 @@ void actuateRobot(char read) {
       moveDance();
       digitalWrite(LED_BUILTIN, HIGH);
       break;
+    case 't':
+      moveTail();
     default:
       break;
   }
@@ -90,17 +94,17 @@ void moveForward() {
   int secondary = 0;
   for (int i = 0; i < 80; i++){
     if (i >= 30) {
-      R1_1.write(joint1_angles_forward_secondary[secondary]);
-      R1_2.write(joint2_angles_forward_secondary[secondary]);
+      R2_1.write(joint1_angles_forward_secondary[secondary]);
+      R2_2.write(joint2_angles_forward_secondary[secondary]);
       secondary++; // secondary = 50 at i = 80
     }
-    R2_1.write(joint1_angles_forward[i]);
-    R2_2.write(joint2_angles_forward[i]);
+    R1_1.write(joint1_angles_forward[i]);
+    R1_2.write(joint2_angles_forward[i]);
     delay(15);
   }
   for (int j = 50; j < 100; j++) {
-    R1_1.write(joint1_angles_forward_secondary[j]);
-    R1_2.write(joint2_angles_forward_secondary[j]);
+    R2_1.write(joint1_angles_forward_secondary[j]);
+    R2_2.write(joint2_angles_forward_secondary[j]);
     delay(15);
   }
   delay(2000);
@@ -153,36 +157,30 @@ void moveStand() {
 void moveLeft() {}
 void moveRight() {}
 void moveDance() {
-  for (int i = 0; i < 2; i++) { // Go up and down 2 times
-    for (int j = 0; j < 20; j++) {
-      R1_1.write(joint1_angles_dance[j]);
-      R2_1.write(joint1_angles_dance[j]);
-      R1_2.write(joint2_angles_dance[j]);
-      R2_2.write(joint2_angles_dance[j]);
-      delay(15);
-    }
-  }
   for (int i = 0; i < 10; i++) {
     R1_1.write(joint1_angles_dance[i]);
-    R2_1.write(joint1_angles_dance[i]);
     R1_2.write(joint2_angles_dance[i]);
-    R2_2.write(joint2_angles_dance[i]);
-    delay(15);    
-  }
-  delay(5000);
-  for (int i = 10; i < 20; i++) {
-    R1_1.write(joint1_angles_dance[i]);
     R2_1.write(joint1_angles_dance[i]);
-    R1_2.write(joint2_angles_dance[i]);
     R2_2.write(joint2_angles_dance[i]);
     delay(15);
   }
-  for (int i = 0; i < 10; i++) {
-    tail.write(0);
-    delay(500);
-    tail.write(50);
-    delay(500);
+  delay(3000);
+  for (int i = 10; i < 20; i++) {
+    R1_1.write(joint1_angles_dance[i]);
+    R1_2.write(joint2_angles_dance[i]);
+    R2_1.write(joint1_angles_dance[i]);
+    R2_2.write(joint2_angles_dance[i]);
+    delay(15);
   }
-  tail.write(25);
-  delay(15);
+  delay(3000);
+  for (int i = 0; i < 4; i++) {
+    moveTail();
+  }
+}
+
+void moveTail() {
+  tail.write(0);
+  delay(1000);
+  tail.write(50);
+  delay(1000);
 }
