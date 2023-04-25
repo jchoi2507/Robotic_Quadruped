@@ -46,7 +46,7 @@ import math
 
 # import detection stuff
 import detection # self-created library
-from thresholds import thresholdsOrange, thresholdsTennisBall, thresholdsTennisBall2, thresholdsTennisBall3, STOP_MAX
+from thresholds import thresholdsOrange, thresholdsTennisBall7, STOP_MAX
 
 # --- set-up leds, clock ---
 # ??? ctrl leds from here once get final message, or within library? I guess harder to change on the fly if in library but then simpler code here...
@@ -61,7 +61,7 @@ clock = clock() # Instantiates a clock object
 usb = USB_VCP()
 
 # toggle to change how code executes (prints if testing, sends over usb if connected to brain)
-testing = False
+testing = True
 
 # toggle based on if detecting april tags below b/c when setting up sensors need to use lower resolution to have enough memory when using april tags
 # !!! could later implement way if code can detect itself if april tag functions from my library are being used to turn on the right resolution
@@ -70,7 +70,7 @@ testing = False
 # i.e. blob_detect_clementine uses higher QVGA
 # NOTE: toggle these depending on what detection methods using (need to do this so code changes frame size so enough memory on Nicla)
 using_april_tags = True
-using_circles = False # also need qqvga for circle detection
+using_circles = True # also need qqvga for circle detection
 
 # toggle to change if want robot to stop if ANYTHING is too close, no matter what the close object is
 e_stop = True
@@ -104,19 +104,25 @@ while True:
     if using_circles:
         img = sensor.snapshot().lens_corr(1.8)
 
+     #make image b&w and eliminate noise
+    img.binary([thresholdsTennisBall7])
+    img.erode(3,3) # from testing realized want smaller threshold for erode and larger for dilate so lots of pixels are deleted, but only bigger clusters are expanded (not small noise left expanded)
+    img.dilate(3,15)
+
+
     # --- DETECT STUFF FROM SENSORS ---
     # !!! if using april tags remember to change boolean above so cam resolution is set small enough to have enough memory
-
+    '''
     # get True/False if image snapshot has tennis ball color in it, return blobs to find characteristics of later
     # -- input params: image snapshot, color thresholds
     # -- outputs: T/F if blob is within color thresholds, blobs object
-    is_tennis_color, blobs = detection.is_color(img,[thresholdsTennisBall3]) # add more thresholds imported inside [] if applicable
+    is_tennis_color, blobs = detection.is_color(img,[thresholdsTennisBall7]) # add more thresholds imported inside [] if applicable
 
     # get T/F if any of the green blobs are circular & curved enough (params from testing)
     # -- input params: blobs object, max/min roundness/convexity
     # -- output: T/F if any blob in blobs is circular/convex enough (compared to tested input params below)
-    is_blob_circle = detection.is_blob_round(blobs,0.90) # (blobs,max_roundness) -- docs say 1 is a perfect circle, but testing had a square at 1...after testing w diff thresholds actually this is true just w small L range threshold roundness goes down a lot
-    is_blob_curved = detection.is_blob_convex(blobs,0.35) # (blobs,min_convex)
+    is_blob_circle = detection.is_blob_round(blobs,0.80) # (blobs,max_roundness) -- docs say 1 is a perfect circle, but testing had a square at 1...after testing w diff thresholds actually this is true just w small L range threshold roundness goes down a lot
+    is_blob_curved = detection.is_blob_convex(blobs,0.30) # (blobs,min_convex)
 
     # draw circle around first blob while testing
     if (len(blobs) > 0) and testing:
@@ -125,12 +131,12 @@ while True:
         for blob in blobs:
             print(blob.roundness())
         #print(blobs[0].roundness())
-
+    '''
 
     # get if circle is detected in image
     # -- input params: image snapshot
     # -- output: T/F if any circles are in image
-    ###is_circle = detection.is_circle(img,2900,testing) # (img,threshold,testing) -- higher threshold = more circular, send testing b/c drawing inside detection library (NEED TO FIX SO CONSISTENT ACROSS METHODS IF DRAWING HERE OR IN LIBRARY)
+    is_circle = detection.is_circle(img,5000,testing) # (img,threshold,testing) -- higher threshold = more circular, send testing b/c drawing inside detection library (NEED TO FIX SO CONSISTENT ACROSS METHODS IF DRAWING HERE OR IN LIBRARY)
 
     # check if anything is too close (if object closer than STOP_MAX distance away
     # -- input params: set-up distance sensor, furthest distance from cam to STOP
@@ -196,7 +202,11 @@ while True:
     # ----- TENNIS BALL ------------------------
     # if tennis ball is detected, tell robot to dance & move head
     # need all these params to filter out colors/shapes that are similar but not a tennis ball
-    if is_tennis_color and is_blob_circle and is_blob_curved: # and is_blob_curved:
+    '''
+    print(is_tennis_color, is_blob_circle, is_blob_curved)
+    if is_tennis_color and is_blob_circle and is_blob_curved:
+    '''
+    if is_circle:
         message = msgs[len(msgs)-1] # last index = 'h'
     # -------------------------------------------
 

@@ -106,7 +106,7 @@ while True:
 
      #make image b&w and eliminate noise
     img.binary([thresholdsTennisBall7])
-    img.erode(3,3)
+    img.erode(3,3) # from testing realized want smaller threshold for erode and larger for dilate so lots of pixels are deleted, but only bigger clusters are expanded (not small noise left expanded)
     img.dilate(3,15)
 
 
