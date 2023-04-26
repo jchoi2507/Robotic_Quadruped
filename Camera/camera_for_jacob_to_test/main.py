@@ -1,13 +1,20 @@
-# Rose Kitz
-# Fri 4/21/23
-# ME35
-# Program to detect april tags, a tennis ball, and distance using the Arduino Nicla Vision cam to direct quadruped robot
-# currently, april tag ids from the 36H11 family in the range from 0 to 2 can be detected, because only 3 messages are necessary to direct the robot
-# when an april tag is detected, the related message for how the robot should move is sent over serial to the brain (Raspi). If nothing or a
-# hold the phone with april tags about 1ft away from cam -- only tags 0 to 2 will show an led color, any others or nothing will cause nothing to happen ('n' is sent)
+'''
+main.py
+By: Rose Kitz
+Edited by: jacob :)
+Date: 4/21/2023
 
-# I created my own library, 'detection,' to store the image processing code, to simply receive outputs of T/F for if certain colors/objects are detected, or #s for things like april tags
+- Image processing code for robotic quadruped, to be used with Arduino Nicla vision camera
+- Camera vision inputs & corresponding outputs:
 
+	INPUT         ->         OUTPUT
+	-------------------------------
+	April Tag [0] ->	 STAND
+	April Tag [1] ->	 FORWARD
+	April Tag [2] ->	 DANCE
+	Tennis Ball   ->	 DANCE
+	Too close     ->	 STAND
+'''
 # NOTE: You can easily/quickly change the messages you want to send from the camera to the brain for any number of april tags you want
 # Simply go to line 79 below and add one-character strings as elements to the 'msgs' list to add what strings can be sent over serial to the RasPi
 # Then, on line 80, add strings as elements to choose what led color you want to correspond to each action.
@@ -16,102 +23,62 @@
 # The index # of the message and its corresponding color is then one more than the april tag id # that will trigger that message (i.e. 's' at index 1 in msgs = april tag id 0)
 # since it was necessary to add a 'nothing' command to the list of messages to distinguish between when stop is called and when nothing is actually desired to happen with an april tag
 
-
-# TODO:
-# clean up drawings so only if testing
-# get a few more thresholds for tennis ball to use for diff lighting (eventually, make a calibration code based on lighting)
 # -------------------------------------------------------------------------------
 
-# import the fxns for diff methods of detection and keep this simple communication code?
-# get the image here and use as param for function within detection file then get direction as result
-# should I be doing classes???
-# will having separate files on board take up more space than all code in one file?
-# like would types of the class be orange, apple, april tag1, apriltag2, etc? but not sure if really need classes for that...
-# is this even helpful if I'm not doing it the right/most efficient way??? maybe I should just ask jacob the cs major what he thinks how to organize it
-
-#?? add stuff from this april tags version to thresholds
-
-
-from pyb import USB_VCP, LED # pyb is for board-related functions
-
-# for distance sensor
+import sensor
+import image
+import math
+import detection # Custom library to receive boolean T/F for certain objects (colors, April Tags, etc, etc.)
+from thresholds import thresholdsOrange, thresholdsTennisBall7, STOP_MAX
+from pyb import USB_VCP, LED
 from machine import I2C
 from vl53l1x import VL53L1X
+from time import sleep, clock
 
-# !!! change to from ___ import __
-import sensor # Import the module for sensor related functions
-import image # Import module containing machine vision algorithms
-from time import sleep, clock # Import module for tracking elapsed time
-import math
+''' Setup '''
 
-# import detection stuff
-import detection # self-created library
-from thresholds import thresholdsOrange, thresholdsTennisBall7, STOP_MAX
+ledRed = LED(1)
+ledGreen = LED(2)
+ledBlue = LED(3)
 
-# --- set-up leds, clock ---
-# ??? ctrl leds from here once get final message, or within library? I guess harder to change on the fly if in library but then simpler code here...
-ledRed = LED(1) # Initiates the red led
-ledGreen = LED(2) # Initiates the green led
-ledBlue = LED(3) # Initiates the blue led
-
-clock = clock() # Instantiates a clock object
-# --------------------------
-
-# set-up usb for serial communication
+clock = clock()
 usb = USB_VCP()
 
-# toggle to change how code executes (prints if testing, sends over usb if connected to brain)
-testing = True
+testing = False # True for printing to terminal
+	        # False for serial communication w/ Raspberry Pi
 
-# toggle based on if detecting april tags below b/c when setting up sensors need to use lower resolution to have enough memory when using april tags
-# !!! could later implement way if code can detect itself if april tag functions from my library are being used to turn on the right resolution
-# i.e. once I import from the libraries, if can somehow detect that find_aprils was imported so don't have to remember to change here when changing detection methods in demo live
-# or maybe when implementing all stuff will find need more memory so just use lower resolution all the time, though I haven't tested non-april tag stuff w the lower resolution not sure
-# i.e. blob_detect_clementine uses higher QVGA
-# NOTE: toggle these depending on what detection methods using (need to do this so code changes frame size so enough memory on Nicla)
 using_april_tags = True
-using_circles = True # also need qqvga for circle detection
+using_circles = True # Also need qqvga for circle detection
 
-# toggle to change if want robot to stop if ANYTHING is too close, no matter what the close object is
-e_stop = True
+e_stop = True # True for sending stop command if ANY object is too close
+	      # False otherwise
 
-# --- set up detection stuff ---
-# ??? could this be done inside detection library ???
-tof = detection.set_sensors(sensor,using_april_tags,using_circles) # ??? should I always setup tof in case need? b/c seems more efficient than initialize every loop of while True when call command, but also seems inefficient to setup here then pass along later if needed...
-# list of discrete commands to send to brain
-# just use index (0, 1, 2, 3, etc.) as the april tag id
-# (april tag ids go from 0 - whatever #, so say first command in list has id=0, second has id=1, etc., instead of making a list of ids...)
+tof = detection.set_sensors(sensor,using_april_tags,using_circles)
 
-# -------------------- CHANGE DESIRED MESSAGES & RELATED LEDS HERE -----------------------------------
-msgs = ['n','s','f','r','l','d','h'] # nothing, stop, forward, right, left, dance, move head AND dance
-leds = ['n','r','g','gb','gr','b','rgb'] # list of led colors to choose related to each message -- g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue, rgb = red-green-blue, n = none (no leds on)
+msgs = ['n','s','f','r','l','d','h'] # Messages to send to Raspberry Pi over UART
+				     # nothing, stop, forward, right, left, dance, move head AND dance
 
-# ?? should do in 2d array? could be more edge-case friendly to check that these are same length...but I trust myself to write the code hopefully, and take care of incorrect characters but not possible b/c no user input only I hardcoding and I would find error
-# ??? should names be diff btwn here and libraries???
-# -----------------------
+leds = ['n','r','g','gb','gr','b','rgb'] # Onboard LED colors to choose related to each message
+					 # g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue, rgb = red-green-blue, n = none (no leds on)
+
+''' main '''
+if (__name__ == "main"):
+
 
 # loop forever
 while True:
-
-    # initialize message to edit based on info from sensors
-    message = msgs[0] # default is nothing, led should be off
-
-    clock.tick() # Advances the clock
-
-    # take image and save in memory
+    message = msgs[0] # Initialize to nothing
+    clock.tick()
     img = sensor.snapshot()
 
     if using_circles:
         img = sensor.snapshot().lens_corr(1.8)
 
-     #make image b&w and eliminate noise
+    # Make image b&w and eliminate noise
     img.binary([thresholdsTennisBall7])
     img.erode(3,3) # from testing realized want smaller threshold for erode and larger for dilate so lots of pixels are deleted, but only bigger clusters are expanded (not small noise left expanded)
     img.dilate(3,15)
 
-
-    # --- DETECT STUFF FROM SENSORS ---
-    # !!! if using april tags remember to change boolean above so cam resolution is set small enough to have enough memory
     '''
     # get True/False if image snapshot has tennis ball color in it, return blobs to find characteristics of later
     # -- input params: image snapshot, color thresholds
@@ -152,8 +119,6 @@ while True:
     #          -2 -- no april tags detected at all
     # NOTE: remember to turn the boolean above (using_april_tags) to True if running the line below so lens has small enough frame size to have enough memory
     april_id = detection.get_april_tag(img,msgs[1:len(msgs)-1]) # !!! end of range is exclusive so want to exclude last (6 = 7th) index -- only send msgs in range that are triggered by april tags, not msgs triggered by other things detected
-
-
 
     # --- DECIDE MESSAGE BASED ON SENSOR INFO ---
     # -------------------------------------------
@@ -255,7 +220,7 @@ while True:
 
 
     # --- send message ---
-    time_btwn_msgs = .1 # [s]
+    time_btwn_msgs = 2 # [s]
     # for when connected to brain
     # NOTE: change boolean at start of code ('testing') to True when using Nicla wirelessly (not connected to PC/IDE)
     if not testing:
