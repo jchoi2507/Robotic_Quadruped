@@ -1,4 +1,12 @@
-Folder Tree:
+# Final Demo
+
+# Mechanical Setup
+
+# Electrical Setup
+
+# Software Setup
+
+# Folder Tree
 ```bash
 ├── Brain_ROS
     ├── Arduino_cpp
