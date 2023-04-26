@@ -18,6 +18,7 @@ Date: 4/15/2023
 #include <Servo.h>
 
 const unsigned int MAX_MESSAGE_BYTE_SIZE = 2; // 1 byte char & 1 terminating byte
+const int LED_PIN = 5; // LED Digital Pin
 
 Servo R1_1; // Right 1 Joint 1
 Servo R1_2; // Right 1 Joint 2
@@ -63,14 +64,14 @@ void loop() {
 void actuateRobot(char read) {
   switch(read) {
     case 'f':
-      digitalWrite(LED_BUILTIN, HIGH); // Flash onboard LED to signal successful transmission
+      digitalWrite(LED_PIN, HIGH); // Flash onboard LED to signal successful transmission
       moveForward();
-      digitalWrite(LED_BUILTIN, LOW);
+      digitalWrite(LED_PIN, LOW);
       break;
     case 's':
-      digitalWrite(LED_BUILTIN, HIGH);
+      digitalWrite(LED_PIN, HIGH);
       moveStand();
-      digitalWrite(LED_BUILTIN, LOW);
+      digitalWrite(LED_PIN, LOW);
       break;
     case 'l':
       moveLeft();
@@ -79,9 +80,9 @@ void actuateRobot(char read) {
       moveRight();
       break;
     case 'd':
-      digitalWrite(LED_BUILTIN, HIGH);
+      digitalWrite(LED_PIN, HIGH);
       moveDance();
-      digitalWrite(LED_BUILTIN, HIGH);
+      digitalWrite(LED_PIN, HIGH);
       break;
     case 't':
       moveTail();
@@ -107,7 +108,7 @@ void moveForward() {
     R2_2.write(joint2_angles_forward_secondary[j]);
     delay(15);
   }
-  delay(2000);
+  delay(1000);
   moveStand();
 }
 
@@ -158,13 +159,17 @@ void moveLeft() {}
 void moveRight() {}
 void moveDance() {
   for (int i = 0; i < 10; i++) {
-    R1_1.write(joint1_angles_dance[i]);
-    R1_2.write(joint2_angles_dance[i]);
     R2_1.write(joint1_angles_dance[i]);
     R2_2.write(joint2_angles_dance[i]);
     delay(15);
   }
-  delay(3000);
+  delay(4000);
+  for (int i = 0; i < 10; i++) {
+    R1_1.write(joint1_angles_dance[i]);
+    R1_2.write(joint2_angles_dance[i]);
+    delay(15);
+  }
+  delay(4000);
   for (int i = 10; i < 20; i++) {
     R1_1.write(joint1_angles_dance[i]);
     R1_2.write(joint2_angles_dance[i]);
@@ -172,15 +177,40 @@ void moveDance() {
     R2_2.write(joint2_angles_dance[i]);
     delay(15);
   }
-  delay(3000);
-  for (int i = 0; i < 4; i++) {
-    moveTail();
+  delay(2000);
+  for (int i = 0; i < 10; i++) {
+    R1_1.write(joint1_angles_dance[i]);
+    R1_2.write(joint2_angles_dance[i]);
+    R2_1.write(joint1_angles_dance[i]);
+    R2_2.write(joint2_angles_dance[i]);
+    delay(15);
   }
+  delay(2000);
+  for (int i = 10; i < 20; i++) {
+    R1_1.write(joint1_angles_dance[i]);
+    R1_2.write(joint2_angles_dance[i]);
+    R2_1.write(joint1_angles_dance[i]);
+    R2_2.write(joint2_angles_dance[i]);
+    delay(15);
+  }
+  delay(1000);
+  for (int i = 0; i < 4; i++) {
+    moveTailDance();
+  }
+}
+
+void moveTailDance() {
+  digitalWrite(LED_PIN, HIGH);
+  tail.write(0);
+  delay(500);
+  digitalWrite(LED_PIN, LOW);
+  tail.write(50);
+  delay(500);
 }
 
 void moveTail() {
   tail.write(0);
-  delay(1000);
+  delay(500);
   tail.write(50);
-  delay(1000);
+  delay(500);
 }
