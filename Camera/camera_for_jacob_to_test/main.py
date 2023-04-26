@@ -217,7 +217,7 @@ if (__name__ == "main"):
 
 
 	    # --- send message ---
-	    time_btwn_msgs = 2 # [s]
+	    time_btwn_msgs = 2.5 # [s]
 	    # for when connected to brain
 	    # NOTE: change boolean at start of code ('testing') to True when using Nicla wirelessly (not connected to PC/IDE)
 	    if not testing:
