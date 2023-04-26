@@ -62,7 +62,7 @@ leds = ['n','r','g','gb','gr','b','rgb'] # Onboard LED colors to choose related 
 					 # g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue, rgb = red-green-blue, n = none (no leds on)
 
 ''' main '''
-if (__name__ == "main"):
+if (__name__ == "__main__"):
 	while True:
 	    message = msgs[0] # Initialize to nothing
 	    clock.tick()
