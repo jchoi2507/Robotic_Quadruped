@@ -206,6 +206,14 @@ while True:
     print(is_tennis_color, is_blob_circle, is_blob_curved)
     if is_tennis_color and is_blob_circle and is_blob_curved:
     '''
+    # with update filtering method, instead of detecting blob color & shape then combining booleans to determine if tennis ball is detected in one line,
+    # now have already done color & noise filtering earlier (color w/ binary using color threshold, and noise with erode & dilate w certain size to 'erase')
+    # and then got a black & white image only showing white pixels where color was within the desired threshold, and black everywhere else
+    # therefore, with the noise filtering, shapes can more easily & accurately be detected
+    # so now, given the B&W image filtered for desired color, we just have to find if there is a circle in the filtered image to say whether a tennis ball is present
+    # therefore, a tennis ball is defined by being:
+    # ---- greenish-yellow (color threshold changes based on lighting)
+    # ---- a circle (must have STRONG 'circleness' with threshold of 5000 [can change as input to fxn in main code above], and filtered for min radius 30 and max 90 px [can't change in main fxn, built-in to library fxn])
     if is_circle:
         message = msgs[len(msgs)-1] # last index = 'h'
     # -------------------------------------------
