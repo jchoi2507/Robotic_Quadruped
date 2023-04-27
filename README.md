@@ -1,9 +1,18 @@
 # Final Demo
 
-<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0325.jpeg" width="49%" img align="left">
-<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0318.jpeg" width="49%" img align="top">
-<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/quadruped_walking_one_cycle.gif" width="49%" img align="top">
+<table>
+<tr><td>
+<img width=1000>
+<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0325.jpeg" width="100%">
+</td><td>
+<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0318.jpeg" width="100%" img align="top">
+</br> <br>
+<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/quadruped_walking_one_cycle.gif" width="100%" img align="top">
+
+</td></tr> </table>
+
 <br clear="both"/>
+
 
 # Overlay Demos
 ###### *Clicking the thumbnails will redirect the current tab—these images are deceptively NOT embedded*
