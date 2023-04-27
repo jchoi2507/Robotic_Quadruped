@@ -1,9 +1,7 @@
 # Final Demo
 
 <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0325.jpeg" width="49%" img align="left">
-
 <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0318.jpeg" width="49%" img align="top">
-
 <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/quadruped_walking_one_cycle.gif" width="49%" img align="top">
 <br clear="both"/>
 
