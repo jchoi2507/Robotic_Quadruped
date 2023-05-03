@@ -1,4 +1,4 @@
-# Robotic Quadruped with ROS and OpenCV
+# Robotic Quadruped with ROS and OpenMV
 <p>
     <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0325.jpeg" width="48%" img align="left">
     <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0318.jpeg" width="48%" img align="top">
