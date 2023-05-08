@@ -15,5 +15,6 @@ thresholdsTennisBall4 = (0, 100, -24, -4, 29, 48) # didn't change L as suggested
 thresholdsTennisBall5 = (0, 100, -18, 15, 21, 48) # L full range, in Blake, with SMALLER QQVGA frame that usually use in main.py
 thresholdsTennisBall6 = (0, 100, -18, 5, 17, 44) # L full range, in Blake, smaller QQVGA frame, readjusted after running main.py...some other adjustment I can't remember?
 thresholdsTennisBall7 = (0, 100, -22, -2, 17, 44) # narrowed A to exclude noise
+thresholdsTennisBall8 = (0, 100, -19, 1, 20, 47) # for my room at night with lamp on
 
 STOP_MAX = 150 #[mm]
