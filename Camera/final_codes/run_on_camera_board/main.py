@@ -34,6 +34,7 @@ from thresholds import thresholdsOrange, thresholdsTennisBall8, STOP_MAX
 from pyb import USB_VCP, LED # pyb is for board-related functions
 from machine import I2C # for distance sensor
 from vl53l1x import VL53L1X # for distance sensor
+import network, omv, rtsp # for livestream
 
 ''' Setup '''
 ledRed = LED(1)
