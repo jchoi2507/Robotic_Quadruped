@@ -59,6 +59,7 @@ msgs = ['n','s','f','d','h'] # Messages to send to Raspberry Pi over UART
 leds = ['n','r','g','rb','rgb'] # Onboard LED colors to choose related to each message
                                             # g = green, r = red, b = blue, gb = green-blue, gr = green-red, rb = red-blue, rgb = red-green-blue, n = none (no leds on)
 
+time_btwn_msgs = 2000 # [ms]
 
 ''' main '''
 if (__name__ == "__main__"):
@@ -66,8 +67,8 @@ if (__name__ == "__main__"):
 
         message = msgs[0] # Initialize to nothing
 
-        deadline = ticks_add(ticks_ms(), 2000)
-
+        # start timer so do 'while' with snapshots continuously but only break out once every 2 seconds to send message
+        deadline = ticks_add(ticks_ms(), time_btwn_msgs)
         while ticks_diff(deadline, ticks_ms()) > 0:
             img = sensor.snapshot() # take image and save in memory
 
@@ -225,7 +226,6 @@ if (__name__ == "__main__"):
 
 
         # --- send message ---
-        time_btwn_msgs = .01 # [s]
         # for when connected to brain
         # NOTE: change boolean at start of code ('testing') to True when using Nicla wirelessly (not connected to PC/IDE)
         if not testing:
