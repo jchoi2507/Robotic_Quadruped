@@ -1,9 +1,9 @@
 # Robotic Quadruped with ROS and OpenMV
 <p>
     <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0325.jpeg" width="48%" img align="left">
-    <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0318.jpeg" width="48%" img align="top">
+    <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/quadruped_walking_one_cycle.gif" width="48%" img align="top">
 </p>
-<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/quadruped_walking_one_cycle.gif" width="48%" img align="top">
+<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_0318.jpeg" width="48%" img align="top">
 
 Full writeup and documentation is [here.](https://organic-diadem-cec.notion.site/Final-Robotic-Quadruped-Dog-with-ROS-and-OpenMV-f2feed3d056e45b3b69db89706526826)
 
@@ -13,28 +13,27 @@ Full writeup and documentation is [here.](https://organic-diadem-cec.notion.site
 | [<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/camera_yt_player.png" width="95%" img align="center">](https://www.youtube.com/watch?v=gz5IpHd0LCQ) | [<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/walking_yt_player.png" width="95%" img align="center">](https://www.youtube.com/watch?v=fqAFdLbydDc) |
 |:--:| :--: | 
 | Controlling Camera Servos | Forward Walking |
-| [<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/dancing_yt_player.png" width="95%" img align="center">](https://www.youtube.com/watch?v=6Ijx8-6ygXU)| [<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/dancing_yt_player.png" width="95%" img align="center">](https://www.youtube.com/watch?v=6Ijx8-6ygXU) |
-| Dancing! | *TBD* |
+| [<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/dancing_yt_player.png" width="95%" img align="center">](https://www.youtube.com/watch?v=6Ijx8-6ygXU)| [<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/apriltags_yt_player.png" width="95%" img align="center">](https://www.youtube.com/watch?app=desktop&v=cIhGNEBhQTE) |
+| Dancing! | April Tag Movements |
 
 ## 2. Process
 
 #### i) Electrical Stuff
-<img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_8485.jpeg" width="35%" img align="left">
-
-<p align="right">
+<p>
+    <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_8485.jpeg" width="35%" img align="left">
 
 | Component | Notes | QTY
 | :--: | :--: | :--: |
-| 2S 35C 2200 mAh 7.4V LiPo | To power servos | 2 |
-| 5V 3A 10000mAh Portable Charger | To power microcontrollers | 1 |
-| MG996R servos | To actuate legs | 8 |
-| Micro SG90 servos | To actuate tail and camera servos | 3 |
+| 2S 35C 2200 mAh 7.4V LiPo | Servo power | 2 |
+| 5V 3A 10000mAh Portable Charger | Microcontroller power | 1 |
+| MG996R servos | Leg actuation | 8 |
+| Micro SG90 servos | Tail & camera actuation | 3 |
 | DC buck converter | 8A rating | 2 |
 | Power distribution block | 16A rating | 2 |
-| Raspberry Pi 4b | Main brain microcontroller | 1 |
+| Raspberry Pi 4b | Brain microcontroller | 1 |
 | Arduino Nicla | Camera vision microcontroller | 1 |
-| Arduino Nano RP2040 | Legs microcontroller | 2 | </p>
-
+| Arduino Nano RP2040 | Legs microcontroller | 2 | 
+</p>
 
 <br clear="all">
 
@@ -79,4 +78,5 @@ Overlay explanation:
 `/catkin_ws`: ROS catkin workspace folder <br/>
 
 #### ii) Bloopers
-[Bloopers!](https://www.youtube.com/watch?v=gSAcY2aBXqs)
+[Bloopers!](https://www.youtube.com/watch?v=gSAcY2aBXqs) <br>
+[Dancing to Tennis Ball](https://www.youtube.com/watch?app=desktop&v=MWfQW3u1T5w)
