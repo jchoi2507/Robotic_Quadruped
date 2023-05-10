@@ -19,21 +19,9 @@ Full writeup and documentation is [here.](https://organic-diadem-cec.notion.site
 ## 2. Process
 
 #### i) Electrical Stuff
-<p>
-    <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_8485.jpeg" width="35%" img align="left">
-
-| Component | Notes | QTY
-| :--: | :--: | :--: |
-| 2S 35C 2200 mAh 7.4V LiPo | Servo power | 2 |
-| 5V 3A 10000mAh Portable Charger | Microcontroller power | 1 |
-| MG996R servos | Leg actuation | 8 |
-| Micro SG90 servos | Tail & camera actuation | 3 |
-| DC buck converter | 8A rating | 2 |
-| Power distribution block | 16A rating | 2 |
-| Raspberry Pi 4b | Brain microcontroller | 1 |
-| Arduino Nicla | Camera vision microcontroller | 1 |
-| Arduino Nano RP2040 | Legs microcontroller | 2 | 
-</p>
+| **Inside Preview** <br> _______________ | **Electrical Bill of Materials** <br> __________________________________________________ |
+|:------------------ | :------------------------------------------------------------------ |
+| <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/IMG_8485.jpeg" width="100%" img align="left"> | <img src="https://github.com/jchoi2507/Robotic_Quadruped/blob/main/Pictures/ebom.png" width="400%" img align="center"> |
 
 <br clear="all">
 
