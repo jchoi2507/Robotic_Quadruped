@@ -43,7 +43,7 @@ ledBlue = LED(3)
 
 usb = USB_VCP() # set-up usb for serial communication
 
-testing = True # True for printing to terminal
+testing = False # True for printing to terminal
                 # False for serial communication w/ Raspberry Pi
 
 using_april_tags = True
@@ -81,7 +81,7 @@ if (__name__ == "__main__"):
             # Make image b&w and eliminate noise
             img.binary([thresholdsTennisBall8])
             img.erode(3,3) # from testing realized want smaller threshold for erode and larger for dilate so lots of pixels are deleted, but only bigger clusters are expanded (not small noise left expanded)
-            img.dilate(3,10)
+            img.dilate(3,15)
 
             '''
             # get True/False if image snapshot has tennis ball color in it, return blobs to find characteristics of later

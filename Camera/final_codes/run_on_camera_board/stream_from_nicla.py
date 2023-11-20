@@ -6,12 +6,17 @@
 # OpenMV Cam's IP address.
 
 import network, omv, rtsp, sensor, time
+from pyb import LED
 
 # RTP MJPEG streaming works using JPEG images produced by the OV2640/OV5640 camera modules.
 # Not all programs (e.g. VLC) implement the full JPEG standard for decoding any JPEG image
 # in RTP packets. Images JPEG compressed by the OpenMV Cam internally may not display.
 
 # FFPLAY will correctly handle JPEGs produced by OpenMV software.
+
+ledRed = LED(1)
+ledGreen = LED(2)
+ledBlue = LED(3)
 
 sensor.reset()
 
@@ -44,6 +49,7 @@ while not network_if.isconnected():
     print("Trying to connect. Note this may take a while...")
     time.sleep_ms(1000)
 print("connected")
+ledGreen.on()
 
 # Setup RTSP Server
 
@@ -75,6 +81,10 @@ def pause_callback(pathname, session): # VLC only pauses locally. This is never 
 
 def teardown_callback(pathname, session):
     print("Closing \"%s\" in session %d" % (pathname, session))
+    ledGreen.off()
+    ledRed.on()
+    time.sleep(.25)
+    ledRed.off()
 
 print("4")
 server.register_setup_cb(setup_callback)
